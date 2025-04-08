@@ -13,11 +13,10 @@
 
 .modal-content {
   background-color: white;
-  padding: 30px;
+  padding: 24px;
   border-radius: 8px;
-  width: 500px;
-  max-width: 90%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
 }
 
 .modal-header {
@@ -25,91 +24,179 @@
 }
 
 .modal-title {
-  color: #123524;
-  font-size: 24px;
+  font-size: 20px;
+  color: #333;
   margin: 0;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .form-label {
   display: block;
   margin-bottom: 8px;
-  color: #123524;
-  font-weight: 500;
+  color: #333;
 }
 
 .form-input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #dee2e6;
+  padding: 8px;
+  border: 1px solid #ced4da;
   border-radius: 4px;
-  font-size: 16px;
-  transition: all 0.3s ease;
+  font-size: 14px;
 }
 
-.form-input:focus {
-  border-color: #123524;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(18, 53, 36, 0.2);
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-select.form-input {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23123524' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 30px;
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #6c757d;
+}
+
+.error {
+  color: #dc3545;
+  padding: 20px;
+  text-align: center;
+  background: #f8d7da;
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+.content-body {
+  padding: 20px;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.content-title {
+  font-size: 24px;
+  color: #333;
 }
 
 .btn-primary {
-  background-color: #123524;
+  background-color: #007bff;
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
-  transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
-.btn-primary:hover {
-  background-color: #0d281c;
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tree-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tree-node {
+  margin-left: 20px;
+}
+
+.tree-node-header {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+  background: #f8f9fa;
+}
+
+.tree-node-header:hover {
+  background: #e9ecef;
+}
+
+.tree-node-toggle {
+  cursor: pointer;
+  margin-right: 8px;
+  color: #6c757d;
+}
+
+.tree-node-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.tree-node-title {
+  font-weight: 500;
+  color: #333;
+}
+
+.tree-node-type {
+  color: #6c757d;
+  font-size: 0.9em;
+}
+
+.tree-node-status {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+}
+
+.tree-node-status.active {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.tree-node-status.non-active {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.tree-node-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .action-btn {
-  padding: 8px;
-  border-radius: 4px;
+  background: none;
   border: none;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
+  padding: 4px;
+  border-radius: 4px;
+  color: #6c757d;
 }
 
-.edit-btn {
-  background-color: #123524;
-  color: white;
-  margin-right: 8px;
+.action-btn:hover {
+  background: #e9ecef;
 }
 
-.edit-btn:hover {
-  background-color: #0d281c;
+.action-btn.edit-btn:hover {
+  color: #007bff;
 }
 
-.delete-btn {
-  background-color: #dc3545;
-  color: white;
+.action-btn.delete-btn:hover {
+  color: #dc3545;
 }
 
-.delete-btn:hover {
-  background-color: #c82333;
+.tree-node-children {
+  margin-left: 20px;
 }
 
 .table-container {

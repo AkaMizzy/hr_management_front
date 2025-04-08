@@ -4,19 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast';
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { FaGoogle, FaGithub } from "react-icons/fa";
-import pic1 from "./Assets/images/pic1.jpeg";
+import pic1 from "../Assets/images/pic1.jpeg";
 
-import "../App.css";
+import "./auth.css";
 
-const RegisterForm = () => {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
-  });
+const LoginForm = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -26,28 +20,22 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    if (form.password !== form.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
-      return;
-    }
-
     try {
-      const res = await axios.post("http://localhost:5000/api/register", {
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        confirmPassword: form.confirmPassword
-      });
-      toast.success("Inscription réussie !");
-      navigate("/login");
+      const res = await axios.post("http://localhost:5000/api/login", form);
+      localStorage.setItem("token", res.data.token);
+      toast.success("Connexion réussie !");
+      navigate("/dashboard");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Erreur d'inscription");
+      toast.error(err.response?.data?.message || "Erreur de connexion");
     }
   };
 
-  const handleGoToLogin = () => {
-    navigate("/login");
+  const handleGoToRegister = () => {
+    navigate("/register");
+  };
+
+  const handleForgotPassword = () => {
+    navigate("/forget-password");
   };
 
   return (
@@ -58,30 +46,18 @@ const RegisterForm = () => {
             <img src={pic1} alt="" />
           </div>
         </div>
-
+        
         <div className="auth-form-container">
           <div className="auth-form-content">
             <div className="auth-brand">
               <span className="logo">Muntadaa</span>
             </div>
-
-            <h1>Créer un compte</h1>
-
+            
+            <h1>Se connecter</h1>
+            
             {error && <div className="error-message">{error}</div>}
-
+            
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <input
-                  name="name"
-                  type="text"
-                  placeholder="Nom d'utilisateur"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                  className="form-input"
-                />
-              </div>
-
               <div className="form-group">
                 <input
                   name="email"
@@ -104,8 +80,8 @@ const RegisterForm = () => {
                   required
                   className="form-input"
                 />
-                <button
-                  type="button"
+                <button 
+                  type="button" 
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -113,34 +89,25 @@ const RegisterForm = () => {
                 </button>
               </div>
 
-              <div className="form-group password-input-group">
-                <input
-                  name="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirmer le mot de passe"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className="form-input"
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              <div className="forgot-password">
+                <button 
+                  type="button" 
+                  className="text-link" 
+                  onClick={handleForgotPassword}
                 >
-                  {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
+                  Mot de passe oublié?
                 </button>
               </div>
-
+              
               <button type="submit" className="auth-button">
-                S'inscrire
+                Se connecter
               </button>
             </form>
-
+            
             <div className="divider">
-              <span>ou s'inscrire avec</span>
+              <span>ou se connecter avec</span>
             </div>
-
+            
             <div className="social-login">
               <button className="social-button google">
                 <FaGoogle />
@@ -149,10 +116,10 @@ const RegisterForm = () => {
                 <FaGithub />
               </button>
             </div>
-
+            
             <div className="auth-footer">
               <p>
-                Vous avez déjà un compte? <button className="text-link" onClick={handleGoToLogin}>Se connecter</button>
+                Vous n'avez pas de compte? <button className="text-link" onClick={handleGoToRegister}>S'inscrire</button>
               </p>
             </div>
           </div>
@@ -162,4 +129,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export default LoginForm;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "../App.css";
-import pic1 from './Assets/images/pic1.jpeg';
+import "./auth.css";
+import pic1 from '../Assets/images/pic1.jpeg';
 
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");

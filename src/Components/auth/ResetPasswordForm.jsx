@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../App.css";
+import "./auth.css";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
-import pic1 from './Assets/images/pic1.jpeg';
+import pic1 from '../Assets/images/pic1.jpeg';
 
 const ResetPasswordForm = () => {
   const location = useLocation();
