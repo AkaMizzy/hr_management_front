@@ -10,8 +10,7 @@ import "../App.css";
 
 const RegisterForm = () => {
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     password: "",
     confirmPassword: ""
@@ -35,10 +34,10 @@ const RegisterForm = () => {
 
     try {
       const res = await axios.post("http://localhost:5000/api/register", {
-        firstName: form.firstName,
-        lastName: form.lastName,
+        name: form.name,
         email: form.email,
-        password: form.password
+        password: form.password,
+        confirmPassword: form.confirmPassword
       });
       toast.success("Inscription réussie !");
       navigate("/login");
@@ -59,36 +58,24 @@ const RegisterForm = () => {
             <img src={pic1} alt="" />
           </div>
         </div>
-        
+
         <div className="auth-form-container">
           <div className="auth-form-content">
             <div className="auth-brand">
               <span className="logo">Muntadaa</span>
             </div>
-            
+
             <h1>Créer un compte</h1>
-            
+
             {error && <div className="error-message">{error}</div>}
-            
+
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <input
-                  name="firstName"
+                  name="name"
                   type="text"
-                  placeholder="Prénom"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  required
-                  className="form-input"
-                />
-              </div>
-
-              <div className="form-group">
-                <input
-                  name="lastName"
-                  type="text"
-                  placeholder="Nom"
-                  value={form.lastName}
+                  placeholder="Nom d'utilisateur"
+                  value={form.name}
                   onChange={handleChange}
                   required
                   className="form-input"
@@ -117,8 +104,8 @@ const RegisterForm = () => {
                   required
                   className="form-input"
                 />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="password-toggle"
                   onClick={() => setShowPassword(!showPassword)}
                 >
@@ -136,24 +123,24 @@ const RegisterForm = () => {
                   required
                   className="form-input"
                 />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="password-toggle"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
-              
+
               <button type="submit" className="auth-button">
                 S'inscrire
               </button>
             </form>
-            
+
             <div className="divider">
               <span>ou s'inscrire avec</span>
             </div>
-            
+
             <div className="social-login">
               <button className="social-button google">
                 <FaGoogle />
@@ -162,7 +149,7 @@ const RegisterForm = () => {
                 <FaGithub />
               </button>
             </div>
-            
+
             <div className="auth-footer">
               <p>
                 Vous avez déjà un compte? <button className="text-link" onClick={handleGoToLogin}>Se connecter</button>
