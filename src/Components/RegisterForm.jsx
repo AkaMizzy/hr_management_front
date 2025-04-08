@@ -2,18 +2,19 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast';
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FaGoogle, FaGithub } from "react-icons/fa";
+import pic1 from "./Assets/images/pic1.jpeg";
 
 import "../App.css";
-import { FaGoogle, FaGithub } from 'react-icons/fa';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
-import pic1 from './Assets/images/pic1.jpeg';
 
 const RegisterForm = () => {
-  const [form, setForm] = useState({ 
-    name: "", 
-    email: "", 
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
     password: "",
-    confirmPassword: "" 
+    confirmPassword: ""
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -26,21 +27,26 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     if (form.password !== form.confirmPassword) {
-      toast.error("Les mots de passe ne correspondent pas");
+      setError("Les mots de passe ne correspondent pas");
       return;
     }
-  
+
     try {
-      await axios.post("http://localhost:5000/api/register", form);
-      toast.success("Compte créé avec succès !");
+      const res = await axios.post("http://localhost:5000/api/register", {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        password: form.password
+      });
+      toast.success("Inscription réussie !");
       navigate("/login");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Erreur lors de l'inscription");
+      toast.error(err.response?.data?.message || "Erreur d'inscription");
     }
   };
-  
+
   const handleGoToLogin = () => {
     navigate("/login");
   };
@@ -67,15 +73,28 @@ const RegisterForm = () => {
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <input
-                  name="name"
-                  placeholder="Nom complet"
-                  value={form.name}
+                  name="firstName"
+                  type="text"
+                  placeholder="Prénom"
+                  value={form.firstName}
                   onChange={handleChange}
                   required
                   className="form-input"
                 />
               </div>
-              
+
+              <div className="form-group">
+                <input
+                  name="lastName"
+                  type="text"
+                  placeholder="Nom"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+
               <div className="form-group">
                 <input
                   name="email"
@@ -87,7 +106,7 @@ const RegisterForm = () => {
                   className="form-input"
                 />
               </div>
-              
+
               <div className="form-group password-input-group">
                 <input
                   name="password"
@@ -106,7 +125,7 @@ const RegisterForm = () => {
                   {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
-              
+
               <div className="form-group password-input-group">
                 <input
                   name="confirmPassword"
@@ -126,12 +145,8 @@ const RegisterForm = () => {
                 </button>
               </div>
               
-              <div className="terms-agreement">
-                <p>En créant un compte, vous acceptez nos <a href="#terms">Conditions d'utilisation</a> et notre <a href="#privacy">Politique de confidentialité</a>.</p>
-              </div>
-              
               <button type="submit" className="auth-button">
-                Créer un compte
+                S'inscrire
               </button>
             </form>
             
