@@ -1,48 +1,59 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { Layout } from "antd";
+import "antd/dist/reset.css"; // Import Ant Design styles
 
+// Components
 import LoginForm from "./Components/LoginForm";
 import RegisterForm from "./Components/RegisterForm";
 import ForgotPasswordForm from "./Components/ForgotPasswordForm";
 import ResetPasswordForm from "./Components/ResetPasswordForm";
+import Dashboard from "./Components/Dashboard/Dashboard";
+import EntityTable from "./Components/Entities/EntityTable";
 
-import "./App.css";
-
-// Exemple de composant protégé
+// Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  return user ? children : <Navigate to="/login" />;
+  const token = localStorage.getItem("token");
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
 };
 
 function App() {
   return (
-    <>
-      {/* Affichage des toasts dans toute l'application */}
-      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
+    <Router>
+      <Toaster position="top-right" />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/forget-password" element={<ForgotPasswordForm />} />
+        <Route path="/reset-password" element={<ResetPasswordForm />} />
 
-      <Router>
-        <Routes>
-          <Route path="/login" element={<LoginForm />} />
-          <Route path="/register" element={<RegisterForm />} />
-          <Route path="/forget-password" element={<ForgotPasswordForm />} />
-          <Route path="/reset-password" element={<ResetPasswordForm />} />
+        {/* Protected Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<div>Tableau de bord</div>} />
+          <Route path="entities" element={<EntityTable />} />
+          <Route path="employees" element={<div>Gestion des employés</div>} />
+          <Route path="documents" element={<div>Gestion des documents</div>} />
+          <Route path="leaves" element={<div>Gestion des congés</div>} />
+          <Route path="settings" element={<div>Paramètres</div>} />
+        </Route>
 
-          {/* Exemple d’une page d'accueil protégée */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <h1 style={{ padding: "2rem", color: "#123524" }}>Bienvenue sur la page d'accueil sécurisée 🎉</h1>
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Redirection pour toutes les autres routes */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </Router>
-    </>
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
   );
 }
 

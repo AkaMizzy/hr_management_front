@@ -1,25 +1,24 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from 'react-hot-toast';
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import pic1 from "./Assets/images/pic1.jpeg";
+
 import "../App.css";
-import { FiEye, FiEyeOff } from 'react-icons/fi';
-import pic1 from './Assets/images/pic1.jpeg';
 
 const ResetPasswordForm = () => {
-  const location = useLocation();
-  const email = location.state?.email || "";
-  
   const [form, setForm] = useState({
-    email: email,
-    newPassword: "",
-    confirmNewPassword: ""
+    password: "",
+    confirmPassword: ""
   });
-  
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const token = new URLSearchParams(location.search).get("token");
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -27,25 +26,26 @@ const ResetPasswordForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
-    if (form.newPassword !== form.confirmNewPassword) {
+    setLoading(true);
+
+    if (form.password !== form.confirmPassword) {
       setError("Les mots de passe ne correspondent pas");
+      setLoading(false);
       return;
     }
-    
-    try {
-      const res = await axios.post("http://localhost:5000/api/reset-password", form);
-      setSuccess(true);
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-    } catch (err) {
-      setError(err.response?.data?.message || "Erreur lors de la réinitialisation du mot de passe");
-    }
-  };
 
-  const handleGoToLogin = () => {
-    navigate("/login");
+    try {
+      await axios.post("http://localhost:5000/api/reset-password", {
+        token,
+        password: form.password
+      });
+      toast.success("Mot de passe réinitialisé avec succès !");
+      navigate("/login");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Erreur lors de la réinitialisation du mot de passe");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,7 +53,7 @@ const ResetPasswordForm = () => {
       <div className="auth-container">
         <div className="auth-illustration">
           <div className="illustration-content">
-           <img src={pic1} alt="" />
+            <img src={pic1} alt="" />
           </div>
         </div>
         
@@ -64,31 +64,19 @@ const ResetPasswordForm = () => {
             </div>
             
             <h1>Réinitialiser le mot de passe</h1>
-            <p className="auth-subtitle">Veuillez entrer votre nouveau mot de passe</p>
+            <p className="description">
+              Entrez votre nouveau mot de passe.
+            </p>
             
             {error && <div className="error-message">{error}</div>}
-            {success && <div className="success-message">Mot de passe réinitialisé avec succès. Redirection vers la page de connexion...</div>}
             
             <form onSubmit={handleSubmit}>
-              <div className="form-group">
-                <input
-                  name="email"
-                  type="email"
-                  placeholder="Adresse email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  readOnly={!!email}
-                  className="form-input"
-                />
-              </div>
-              
               <div className="form-group password-input-group">
                 <input
-                  name="newPassword"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Nouveau mot de passe"
-                  value={form.newPassword}
+                  value={form.password}
                   onChange={handleChange}
                   required
                   className="form-input"
@@ -101,13 +89,13 @@ const ResetPasswordForm = () => {
                   {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
-              
+
               <div className="form-group password-input-group">
                 <input
-                  name="confirmNewPassword"
+                  name="confirmPassword"
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirmer le nouveau mot de passe"
-                  value={form.confirmNewPassword}
+                  value={form.confirmPassword}
                   onChange={handleChange}
                   required
                   className="form-input"
@@ -121,16 +109,14 @@ const ResetPasswordForm = () => {
                 </button>
               </div>
               
-              <button type="submit" className="auth-button">
-                Réinitialiser le mot de passe
+              <button 
+                type="submit" 
+                className="auth-button"
+                disabled={loading}
+              >
+                {loading ? "Réinitialisation en cours..." : "Réinitialiser le mot de passe"}
               </button>
             </form>
-            
-            <div className="auth-footer">
-              <p>
-                <button className="text-link" onClick={handleGoToLogin}>Retour à la connexion</button>
-              </p>
-            </div>
           </div>
         </div>
       </div>

@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast';
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { FaGoogle, FaGithub } from "react-icons/fa";
+import pic1 from "./Assets/images/pic1.jpeg";
 
 import "../App.css";
-import { FaGoogle, FaGithub } from 'react-icons/fa';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
-import pic1 from './Assets/images/pic1.jpeg'
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -20,17 +20,15 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-  
     try {
       const res = await axios.post("http://localhost:5000/api/login", form);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      localStorage.setItem("token", res.data.token);
       toast.success("Connexion réussie !");
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       toast.error(err.response?.data?.message || "Erreur de connexion");
     }
   };
-  
 
   const handleGoToRegister = () => {
     navigate("/register");
@@ -71,7 +69,7 @@ const LoginForm = () => {
                   className="form-input"
                 />
               </div>
-              
+
               <div className="form-group password-input-group">
                 <input
                   name="password"
@@ -90,7 +88,7 @@ const LoginForm = () => {
                   {showPassword ? <FiEyeOff /> : <FiEye />}
                 </button>
               </div>
-              
+
               <div className="forgot-password">
                 <button 
                   type="button" 
