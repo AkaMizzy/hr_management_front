@@ -1,24 +1,29 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Button, Avatar } from 'antd';
 import {
-    UserOutlined,
     TeamOutlined,
     BankOutlined,
     FileTextOutlined,
     CalendarOutlined,
-    SettingOutlined,
+    DashboardOutlined,
+    LogoutOutlined,
+    UserOutlined
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import './Sidebar.css';
 
 const { Sider } = Layout;
 
-const Sidebar = () => {
+const Sidebar = ({ collapsed, onCollapse }) => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const selectedKey = location.pathname.split('/')[1] || 'dashboard';
 
     const menuItems = [
         {
             key: 'dashboard',
-            icon: <UserOutlined />,
+            icon: <DashboardOutlined />,
             label: 'Tableau de bord',
         },
         {
@@ -40,35 +45,64 @@ const Sidebar = () => {
             key: 'leaves',
             icon: <CalendarOutlined />,
             label: 'Gestion des congés',
-        },
-        {
-            key: 'settings',
-            icon: <SettingOutlined />,
-            label: 'Paramètres',
-        },
+        }, 
     ];
 
     const handleMenuClick = ({ key }) => {
         navigate(`/${key}`);
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
+
     return (
         <Sider
-            style={{
-                overflow: 'auto',
-                height: '100vh',
-                position: 'fixed',
-                left: 0,
-            }}
+            className="sidebar"
+            width={240}
+            collapsible
+            collapsed={collapsed}
+            onCollapse={onCollapse}
         >
-            <div className="logo" style={{ height: 32, margin: 16, background: 'rgba(255, 255, 255, 0.2)' }} />
-            <Menu
-                theme="dark"
-                mode="inline"
-                defaultSelectedKeys={['dashboard']}
-                items={menuItems}
-                onClick={handleMenuClick}
-            />
+            
+            
+            <div className="user-profile">
+                <Avatar 
+                    size={collapsed ? 36 : 48} 
+                    icon={<UserOutlined />}
+                    className="user-avatar"
+                />
+                {!collapsed && (
+                    <div className="user-info">
+                        <h3 className="user-name">Admin User</h3>
+                        <p className="user-role">Administrator</p>
+                    </div>
+                )}
+            </div>
+            
+            <div className="menu-container">
+                <Menu
+                    theme="light"
+                    mode="inline"
+                    selectedKeys={[selectedKey]}
+                    items={menuItems}
+                    onClick={handleMenuClick}
+                    className="sidebar-menu"
+                />
+            </div>
+            
+            <div className="logout-container">
+                <Button 
+                    type="primary" 
+                    danger 
+                    icon={<LogoutOutlined />} 
+                    onClick={handleLogout}
+                    className="logout-button"
+                >
+                    {!collapsed && 'Déconnexion'}
+                </Button>
+            </div>
         </Sider>
     );
 };

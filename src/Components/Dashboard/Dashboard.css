@@ -56,9 +56,12 @@
 }
 
 .main-content {
-  margin-left: 250px;
-  padding: 20px;
-  min-height: 100vh;
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  min-height: calc(100vh - 100px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
 .content-header {
@@ -193,4 +196,72 @@
   border-color: #123524;
   outline: none;
   box-shadow: 0 0 0 2px rgba(18, 53, 36, 0.2);
+}
+
+/* Site layout transition for smooth sidebar collapse */
+.site-layout {
+  transition: margin-left 0.3s cubic-bezier(0.2, 0, 0, 1);
+  padding: 0;
+  background: #f5f7fa;
+}
+
+/* Content area styling */
+.ant-layout-content {
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 768px) {
+  .site-layout {
+    margin-left: 0 !important;
+  }
+  
+  .site-layout-collapsed {
+    margin-left: 0 !important; 
+  }
+  
+  .main-content {
+    padding: 16px;
+    border-radius: 8px;
+  }
+  
+  .ant-layout-content {
+    padding: 12px;
+  }
+}
+
+/* Smooth transitions */
+.main-content, 
+.site-layout, 
+.ant-layout-content {
+  transition: all 0.3s cubic-bezier(0.2, 0, 0, 1) 0s;
+}
+
+/* Custom scrollbar for the main content */
+.main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f0f2f5;
+  border-radius: 6px;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 176, 116, 0.3);
+  border-radius: 6px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 176, 116, 0.5);
+
+/* Customize ant design components */
+.ant-layout {
+  background: #f0f2f5;
+}
+
+.ant-layout-footer {
+  background: white;
+} 
 } 

@@ -1,0 +1,195 @@
+.sidebar {
+  background-color: #00b074 !important;
+  background-image: linear-gradient(135deg, #00b074 0%, #009965 100%);
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Show scrollbar only when hovering the sidebar */
+.sidebar:hover {
+  overflow-y: auto;
+}
+
+/* Custom scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.logo-text {
+  color: white;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* User profile section */
+.user-profile {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+}
+
+.user-info {
+  overflow: hidden;
+}
+
+.user-name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Menu container */
+.menu-container {
+  flex: 1;
+  padding: 16px 0;
+}
+
+/* Override Ant Design Menu Styles */
+.sidebar-menu.ant-menu {
+  background-color: transparent !important;
+  border-right: none !important;
+}
+
+.sidebar-menu.ant-menu-light .ant-menu-item {
+  color: rgba(255, 255, 255, 0.85);
+  margin: 4px 12px;
+  border-radius: 10px;
+  height: 46px;
+  line-height: 46px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.sidebar-menu.ant-menu-light .ant-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  transform: translateX(3px);
+}
+
+.sidebar-menu.ant-menu-light .ant-menu-item-selected {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-weight: 600;
+  transform: translateX(3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-menu.ant-menu-light .ant-menu-item-selected::after {
+  display: none;
+}
+
+.sidebar-menu.ant-menu-light .ant-menu-item .anticon {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+.sidebar-menu.ant-menu-light .ant-menu-item-selected .anticon {
+  color: white;
+}
+
+/* Collapse button styling */
+.ant-layout-sider-trigger {
+  background-color: #009965 !important;
+  height: 40px;
+  line-height: 40px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* For collapsed state */
+.sidebar.ant-layout-sider-collapsed .logo-text {
+  display: none;
+}
+
+.sidebar.ant-layout-sider-collapsed .logo-container {
+  justify-content: center;
+}
+
+/* Logout button styles */
+.logout-container {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-button {
+  width: 100%;
+  height: 40px;
+  background-color: #ff4d4f !important;
+  border-color: #ff4d4f !important;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(255, 77, 79, 0.2);
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #ff7875 !important;
+  border-color: #ff7875 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(255, 77, 79, 0.25);
+}
+
+/* Adjust Dashboard content based on sidebar collapse */
+@media (max-width: 768px) {
+  .sidebar.ant-layout-sider-collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden;
+  }
+} 
