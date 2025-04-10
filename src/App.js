@@ -10,7 +10,7 @@ import RegisterForm from "./Components/auth/RegisterForm";
 import ForgotPasswordForm from "./Components/auth/ForgotPasswordForm";
 import ResetPasswordForm from "./Components/auth/ResetPasswordForm";
 import Dashboard from "./Components/Dashboard/Dashboard";
-import EntityTable from "./Components/Entities/EntityTable";
+import Entity from "./Components/Entities/Entity";
 import Employee from "./Components/Employees/Employees";
 import Employees from "./Components/Employees/Employees";
 
@@ -45,7 +45,7 @@ function App() {
         >
           <Route index element={<Navigate to="/login" replace />} />
           <Route path="dashboard" element={<div>Tableau de bord</div>} />
-          <Route path="entities" element={<EntityTable />} />
+          <Route path="entities" element={<Entity />} />
           <Route path="employees" element={<Employees />} />
           <Route path="documents" element={<div>Gestion des documents</div>} />
           <Route path="leaves" element={<div>Gestion des congés</div>} />

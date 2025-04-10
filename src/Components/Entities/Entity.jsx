@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FiEdit2, FiTrash2, FiPlus, FiChevronRight, FiChevronDown } from "react-icons/fi";
-import "./EntityTable.css";
+import "./Entity.css";
 
-const EntityTable = () => {
+const Entity = () => {
   const [entities, setEntities] = useState([]);
   const [types, setTypes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,13 +23,16 @@ const EntityTable = () => {
     const fetchData = async () => {
       try {
         const [entitiesRes, typesRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/entites"),
-          axios.get("http://localhost:5000/api/entites/types")
+          axios.get("http://localhost:7000/api/entites"),
+          axios.get("http://localhost:7000/api/entites/types")
         ]);
+        console.log("Fetched entities:", entitiesRes.data);
+        console.log("Fetched types:", typesRes.data);
         setEntities(entitiesRes.data);
         setTypes(typesRes.data);
         setLoading(false);
       } catch (err) {
+        console.error("Error fetching data:", err);
         setError("Erreur lors du chargement des données");
         setLoading(false);
       }
@@ -61,15 +64,18 @@ const EntityTable = () => {
   };
 
   const handleEdit = (entity) => {
-    setFormData(entity);
+    setFormData({
+      ...entity,
+      parent_id: entity.parent_id ? Number(entity.parent_id) : null
+    });
     setIsModalOpen(true);
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cette entité ?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/entites/${id}`);
-        const updatedEntities = await axios.get("http://localhost:5000/api/entites");
+        await axios.delete(`http://localhost:7000/api/entites/${id}`);
+        const updatedEntities = await axios.get("http://localhost:7000/api/entites");
         setEntities(updatedEntities.data);
       } catch (err) {
         setError(err.response?.data?.message || "Erreur lors de la suppression");
@@ -80,18 +86,49 @@ const EntityTable = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Format data to ensure type_id is a number and parent_id is a number or null
+      const formattedData = {
+        ...formData,
+        type_id: Number(formData.type_id),
+        parent_id: formData.parent_id ? Number(formData.parent_id) : null
+      };
+      
       if (formData.id) {
-        await axios.put(`http://localhost:5000/api/entites/${formData.id}`, formData);
+        await axios.put(`http://localhost:7000/api/entites/${formData.id}`, formattedData);
       } else {
-        await axios.post("http://localhost:5000/api/entites", formData);
+        await axios.post("http://localhost:7000/api/entites", formattedData);
       }
-      const updatedEntities = await axios.get("http://localhost:5000/api/entites");
+      const updatedEntities = await axios.get("http://localhost:7000/api/entites");
       setEntities(updatedEntities.data);
       setIsModalOpen(false);
     } catch (err) {
       setError(err.response?.data?.message || "Erreur lors de l'enregistrement");
     }
   };
+
+  // Helper function to flatten the entity tree for dropdown selection
+  const flattenEntityTree = (entities, level = 0) => {
+    let result = [];
+    entities.forEach(entity => {
+      // Add the entity without any prefix
+      result.push({
+        ...entity,
+        displayName: entity.tituler,
+        level
+      });
+      
+      if (entity.children && entity.children.length > 0) {
+        // Recursively add children with increased indentation level
+        result = result.concat(
+          flattenEntityTree(entity.children, level + 1)
+        );
+      }
+    });
+    return result;
+  };
+
+  // Get flattened list of entities for parent selection
+  const flatEntities = flattenEntityTree(entities);
 
   const renderTreeNode = (node) => {
     const isExpanded = expandedNodes.has(node.id);
@@ -107,11 +144,13 @@ const EntityTable = () => {
             {hasChildren && (isExpanded ? <FiChevronDown /> : <FiChevronRight />)}
           </span>
           <span className="tree-node-content">
-            <span className="tree-node-title">{node.tituler}</span>
-            <span className="tree-node-type">{node.type_name}</span>
-            <span className={`tree-node-status ${node.status}`}>
-              {node.status === "active" ? "Actif" : "Non actif"}
-            </span>
+            <div className="tree-node-left">
+              <span className="tree-node-title">{node.tituler}</span>
+              <span className="tree-node-type">{node.type_name}</span>
+              <span className={`tree-node-status ${node.status}`}>
+                {node.status === "active" ? "Actif" : "Non actif"}
+              </span>
+            </div>
           </span>
           <div className="tree-node-actions">
             <button
@@ -188,7 +227,7 @@ const EntityTable = () => {
                   <option value="">Sélectionner un type</option>
                   {types.map(type => (
                     <option key={type.id} value={type.id}>
-                      {type.désignation}
+                      {type.designation}
                     </option>
                   ))}
                 </select>
@@ -212,16 +251,24 @@ const EntityTable = () => {
                 <select
                   className="form-input"
                   value={formData.parent_id || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, parent_id: e.target.value || null })
-                  }
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setFormData({ 
+                      ...formData, 
+                      parent_id: value ? Number(value) : null 
+                    });
+                  }}
                 >
                   <option value="">Aucune (racine)</option>
-                  {entities
+                  {flatEntities
                     .filter(entity => !formData.id || entity.id !== formData.id)
                     .map(entity => (
-                      <option key={entity.id} value={entity.id}>
-                        {entity.tituler}
+                      <option 
+                        key={entity.id} 
+                        value={entity.id} 
+                        style={{ paddingLeft: entity.level ? `${entity.level * 20}px` : '0' }}
+                      >
+                        {entity.displayName}
                       </option>
                     ))}
                 </select>
@@ -246,4 +293,4 @@ const EntityTable = () => {
   );
 };
 
-export default EntityTable; 
+export default Entity; 

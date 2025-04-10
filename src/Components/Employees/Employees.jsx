@@ -23,7 +23,7 @@ const Employees = () => {
   const fetchEmployees = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch("http://localhost:5000/api/employees", {
+      const response = await fetch("http://localhost:7000/api/employees", {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -50,8 +50,8 @@ const Employees = () => {
     try {
       const token = localStorage.getItem('token');
       const url = selectedEmployee 
-        ? `http://localhost:5000/api/employees/${selectedEmployee.id}`
-        : "http://localhost:5000/api/employees";
+        ? `http://localhost:7000/api/employees/${selectedEmployee.id}`
+        : "http://localhost:7000/api/employees";
       
       const method = selectedEmployee ? "PUT" : "POST";
       
@@ -94,7 +94,7 @@ const Employees = () => {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cet employé ?")) {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/employees/${id}`, {
+        const response = await fetch(`http://localhost:7000/api/employees/${id}`, {
           method: "DELETE",
           headers: {
             'Authorization': `Bearer ${token}`

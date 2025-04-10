@@ -22,7 +22,7 @@ const LoginForm = () => {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post("http://localhost:5000/api/login", form);
+      const res = await axios.post("http://localhost:7000/api/login", form);
       localStorage.setItem("token", res.data.token);
       toast.success("Connexion réussie !");
       navigate("/dashboard");

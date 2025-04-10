@@ -67,7 +67,7 @@ const Dashboard = () => {
               <div className="user-avatar">
                 {user?.profileImage ? (
                   <img 
-                    src={`http://localhost:5000/uploads/${user.profileImage}`} 
+                    src={`http://localhost:7000/uploads/${user.profileImage}`} 
                     alt="Profile" 
                   />
                 ) : (
@@ -84,7 +84,7 @@ const Dashboard = () => {
                   <div className="profile-avatar">
                     {user?.profileImage ? (
                       <img 
-                        src={`http://localhost:5000/uploads/${user.profileImage}`} 
+                        src={`http://localhost:7000/uploads/${user.profileImage}`} 
                         alt="Profile" 
                       />
                     ) : (
