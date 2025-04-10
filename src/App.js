@@ -2,15 +2,17 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { Layout } from "antd";
-import "antd/dist/reset.css"; // Import Ant Design styles
+import "antd/dist/reset.css"; 
 
 // Components
-import LoginForm from "./Components/LoginForm";
-import RegisterForm from "./Components/RegisterForm";
-import ForgotPasswordForm from "./Components/ForgotPasswordForm";
-import ResetPasswordForm from "./Components/ResetPasswordForm";
+import LoginForm from "./Components/auth/LoginForm";
+import RegisterForm from "./Components/auth/RegisterForm";
+import ForgotPasswordForm from "./Components/auth/ForgotPasswordForm";
+import ResetPasswordForm from "./Components/auth/ResetPasswordForm";
 import Dashboard from "./Components/Dashboard/Dashboard";
 import EntityTable from "./Components/Entities/EntityTable";
+import Employee from "./Components/Employees/Employees";
+import Employees from "./Components/Employees/Employees";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -41,10 +43,10 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route index element={<Navigate to="/login" replace />} />
           <Route path="dashboard" element={<div>Tableau de bord</div>} />
           <Route path="entities" element={<EntityTable />} />
-          <Route path="employees" element={<div>Gestion des employés</div>} />
+          <Route path="employees" element={<Employees />} />
           <Route path="documents" element={<div>Gestion des documents</div>} />
           <Route path="leaves" element={<div>Gestion des congés</div>} />
           <Route path="settings" element={<div>Paramètres</div>} />
