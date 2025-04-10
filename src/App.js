@@ -10,6 +10,7 @@ import ForgotPasswordForm from "./Components/auth/ForgotPasswordForm";
 import ResetPasswordForm from "./Components/auth/ResetPasswordForm";
 import Dashboard from "./Components/Dashboard/Dashboard";
 import Entity from "./Components/Entities/Entity";
+import Employee from "./Components/Employees/Employee";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -42,10 +43,10 @@ function App() {
         >
           <Route index element={<Navigate to="/login" replace />} />
           <Route path="dashboard" element={<div>Tableau de bord</div>} />
-          <Route path="entities" element={<Entity />} />
-          <Route path="employees" element={<div>Gestion des employés</div>} />
+          <Route path="entites" element={<Entity />} />
+          <Route path="employes" element={<Employee />} />
           <Route path="documents" element={<div>Gestion des documents</div>} />
-          <Route path="leaves" element={<div>Gestion des congés</div>} />
+          <Route path="conge" element={<div>Gestion des congés</div>} />
         </Route>
 
         {/* Catch all route */}

@@ -27,12 +27,12 @@ const Sidebar = ({ collapsed, onCollapse }) => {
             label: 'Tableau de bord',
         },
         {
-            key: 'entities',
+            key: 'entites',
             icon: <BankOutlined />,
             label: 'Gestion des entités',
         },
         {
-            key: 'employees',
+            key: 'employes',
             icon: <TeamOutlined />,
             label: 'Gestion des employés',
         },
@@ -42,7 +42,7 @@ const Sidebar = ({ collapsed, onCollapse }) => {
             label: 'Gestion des documents',
         },
         {
-            key: 'leaves',
+            key: 'conge',
             icon: <CalendarOutlined />,
             label: 'Gestion des congés',
         }, 
