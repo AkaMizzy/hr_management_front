@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { message, Table, Button, Modal, Form, Input, Select, DatePicker, Space, Tooltip } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { message, Table, Button, Modal, Form, Input, Select, DatePicker, Space, Tooltip, Radio, Card } from "antd";
+import { 
+  EditOutlined, 
+  DeleteOutlined, 
+  PlusOutlined, 
+  SearchOutlined, 
+  TableOutlined, 
+  ApartmentOutlined 
+} from "@ant-design/icons";
 import moment from "moment";
 import "./Employee.css";
+import EmployeeHierarchy from "./EmployeeHierarchy";
 
 const { Option } = Select;
 
@@ -14,6 +22,8 @@ const Employee = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [form] = Form.useForm();
   const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState("table"); // "table" or "hierarchy"
+  const [selectedResponsable, setSelectedResponsable] = useState(null);
 
   // Fetch employees on component mount
   useEffect(() => {
@@ -55,7 +65,13 @@ const Employee = () => {
       fetchEmployees();
     } catch (error) {
       console.error("Error deleting employee:", error);
-      message.error("Erreur lors de la suppression de l'employé");
+      
+      // Check if there was a specific error message from the API
+      if (error.response?.data?.message) {
+        message.error(error.response.data.message);
+      } else {
+        message.error("Erreur lors de la suppression de l'employé");
+      }
     }
   };
 
@@ -123,6 +139,7 @@ const Employee = () => {
       ],
       onFilter: (value, record) => record.genre === value,
     },
+    
     {
       title: "Email",
       dataIndex: "email",
@@ -161,36 +178,89 @@ const Employee = () => {
     },
   ];
 
+  const handleResponsableChange = (value) => {
+    if (value === "all") {
+      setSelectedResponsable(null);
+    } else {
+      const resp = employees.find(emp => emp.id === value);
+      setSelectedResponsable(resp);
+    }
+  };
+
   return (
     <div className="employee-container">
       <div className="employee-header">
         <h1>Gestion des Employés</h1>
-        <div className="employee-actions">
-          <Input
-            placeholder="Rechercher un employé"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            prefix={<SearchOutlined />}
-            className="search-input"
-          />
-          <Button 
-            type="primary" 
-            icon={<PlusOutlined />} 
-            onClick={handleAdd}
-          >
-            Ajouter un employé
-          </Button>
+        
+        <div className="header-controls">
+          <div className="view-selector-container">
+            <Radio.Group 
+              value={viewMode} 
+              onChange={e => setViewMode(e.target.value)}
+              className="view-selector"
+              buttonStyle="solid"
+            >
+              <Radio.Button value="table"><TableOutlined /> Liste</Radio.Button>
+              <Radio.Button value="hierarchy"><ApartmentOutlined /> Hiérarchie</Radio.Button>
+            </Radio.Group>
+            
+            {viewMode === "table" && (
+              <Input
+                placeholder="Rechercher un employé"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                prefix={<SearchOutlined />}
+                className="search-input"
+              />
+            )}
+          </div>
+          
+          <div className="add-button-container">
+            <Button 
+              type="primary" 
+              icon={<PlusOutlined />} 
+              onClick={handleAdd}
+            >
+              Ajouter un employé
+            </Button>
+          </div>
         </div>
       </div>
 
-      <Table
-        dataSource={filteredEmployees}
-        columns={columns}
-        rowKey="id"
-        loading={isLoading}
-        pagination={{ pageSize: 10 }}
-        className="employee-table"
-      />
+      {viewMode === "hierarchy" && (
+        <div className="hierarchy-container">
+          <Card size="small" className="hierarchy-filter">
+            <Select
+              placeholder="Sélectionner un responsable"
+              onChange={handleResponsableChange}
+              className="employee-responsable-select"
+              allowClear
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              <Option value="all">Tous les employés (sans responsable)</Option>
+              {employees.map(emp => (
+                <Option key={emp.id} value={emp.id}>{emp.prenom} {emp.nom}</Option>
+              ))}
+            </Select>
+          </Card>
+          <EmployeeHierarchy selectedManager={selectedResponsable} />
+        </div>
+      )}
+
+      {viewMode === "table" && (
+        <Table
+          dataSource={filteredEmployees}
+          columns={columns}
+          rowKey="id"
+          loading={isLoading}
+          pagination={{ pageSize: 10 }}
+          className="employee-table"
+        />
+      )}
 
       {/* Add/Edit Employee Modal */}
       <Modal
@@ -266,6 +336,28 @@ const Employee = () => {
             ]}
           >
             <Input placeholder="Email" />
+          </Form.Item>
+
+          <Form.Item
+            name="responsable_id"
+            label="Responsable"
+          >
+            <Select 
+              placeholder="Sélectionner un responsable" 
+              allowClear
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {employees
+                .filter(emp => !selectedEmployee || emp.id !== selectedEmployee.id)
+                .map(emp => (
+                  <Option key={emp.id} value={emp.id}>{emp.prenom} {emp.nom}</Option>
+                ))
+              }
+            </Select>
           </Form.Item>
 
           <Form.Item

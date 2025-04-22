@@ -10,6 +10,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  position: relative;
 }
 
 .employee-header h1 {
@@ -17,16 +18,43 @@
   font-size: 24px;
   font-weight: 600;
   color: #2c3e50;
+  white-space: nowrap;
+  margin-right: 20px;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.view-selector-container {
+  display: flex;
+  align-items: center;
+}
+
+.view-selector {
+  margin-right: 15px;
+  white-space: nowrap;
+  background: #f8f9fa;
+  border-radius: 8px;
+  display: inline-flex;
+}
+
+.search-input {
+  width: 250px;
+}
+
+.add-button-container {
+  white-space: nowrap;
 }
 
 .employee-actions {
   display: flex;
   gap: 12px;
   align-items: center;
-}
-
-.search-input {
-  width: 250px;
 }
 
 .employee-table .ant-table {
@@ -59,7 +87,53 @@
   color: #2c3e50;
 }
 
+/* Hierarchy Tree Styling */
+.hierarchy-container {
+  margin-top: 10px;
+}
+
+.hierarchy-card {
+  margin-top: 16px;
+}
+
+.employee-tree {
+  padding: 12px 0;
+}
+
+.employee-node {
+  font-size: 14px;
+}
+
+.employee-phone {
+  color: #666;
+  font-size: 13px;
+}
+
+.hierarchy-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.hierarchy-filter {
+  margin-top: 10px;
+}
+
+.employee-responsable-select {
+  width: 100%;
+  max-width: 300px;
+}
+
 /* Responsive Adjustments */
+@media screen and (max-width: 992px) {
+  .header-controls {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .employee-header {
     flex-direction: column;
@@ -67,10 +141,9 @@
     gap: 16px;
   }
   
-  .employee-actions {
+  .header-controls {
     width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-wrap: wrap;
   }
   
   .search-input {
@@ -85,4 +158,166 @@
   .form-item-half {
     width: 100%;
   }
-} 
+  
+  .employee-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Delete Confirmation Styles */
+.delete-confirmation {
+  text-align: center;
+}
+
+.delete-confirmation p {
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: #333;
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.delete-confirm-btn,
+.delete-cancel-btn {
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.delete-confirm-btn {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #ff7875;
+}
+
+.delete-cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.delete-cancel-btn:hover {
+  background-color: #d9d9d9;
+}
+
+.employee-details-card {
+  margin-top: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.detail-section {
+  padding: 16px;
+  background-color: #fafafa;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-item .ant-typography {
+  margin: 0;
+}
+
+.detail-item .ant-typography strong {
+  color: #123524;
+}
+
+.ant-modal-content {
+  border-radius: 8px;
+}
+
+.ant-modal-header {
+  border-radius: 8px 8px 0 0;
+  background-color: #123524;
+}
+
+.ant-modal-title {
+  color: white;
+  font-weight: 600;
+}
+
+.ant-modal-close {
+  color: white;
+}
+
+.ant-modal-close:hover {
+  color: #52c41a;
+}
+
+/* Styles pour les boutons d'action */
+.ant-space .ant-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.ant-space .ant-btn:hover {
+  transform: translateY(-2px);
+}
+
+.ant-space .ant-btn .anticon {
+  font-size: 16px;
+}
+
+/* Style pour le bouton œil (voir) */
+.ant-space .ant-btn .anticon-eye {
+  color: #52c41a;
+}
+
+.ant-space .ant-btn:hover .anticon-eye {
+  color: #73d13d;
+}
+
+/* Style pour le bouton édition */
+.ant-space .ant-btn .anticon-edit {
+  color: #1890ff;
+}
+
+.ant-space .ant-btn:hover .anticon-edit {
+  color: #40a9ff;
+}
+
+/* Style pour le bouton suppression */
+.ant-space .ant-btn .anticon-delete {
+  color: #ff4d4f;
+}
+
+.ant-space .ant-btn:hover .anticon-delete {
+  color: #ff7875;
+}
+
+/* Effet de survol pour tous les boutons */
+.ant-space .ant-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
