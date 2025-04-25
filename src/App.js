@@ -11,6 +11,7 @@ import ResetPasswordForm from "./Components/auth/ResetPasswordForm";
 import Dashboard from "./Components/Dashboard/Dashboard";
 import Entity from "./Components/Entities/Entity";
 import Employee from "./Components/Employees/Employee";
+import Document from "./Components/Documents/Document";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -45,7 +46,7 @@ function App() {
           <Route path="dashboard" element={<div>Tableau de bord</div>} />
           <Route path="entites" element={<Entity />} />
           <Route path="employes" element={<Employee />} />
-          <Route path="documents" element={<div>Gestion des documents</div>} />
+          <Route path="documents" element={<Document />} />
           <Route path="conge" element={<div>Gestion des congés</div>} />
         </Route>
 

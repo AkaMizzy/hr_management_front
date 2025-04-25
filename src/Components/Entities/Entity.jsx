@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FiEdit2, FiTrash2, FiPlus, FiChevronRight, FiChevronDown } from "react-icons/fi";
+import { toast } from 'react-hot-toast';
 import "./Entity.css";
 
 const Entity = () => {
@@ -72,15 +73,47 @@ const Entity = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette entité ?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/entites/${id}`);
-        const updatedEntities = await axios.get("http://localhost:5000/api/entites");
-        setEntities(updatedEntities.data);
-      } catch (err) {
-        setError(err.response?.data?.message || "Erreur lors de la suppression");
+    toast((t) => (
+      <div className="delete-confirmation">
+        <p>Êtes-vous sûr de vouloir supprimer cette entité ?</p>
+        <div className="delete-actions">
+          <button 
+            className="delete-confirm-btn"
+            onClick={async () => {
+              try {
+                await axios.delete(`http://localhost:5000/api/entites/${id}`);
+                const updatedEntities = await axios.get("http://localhost:5000/api/entites");
+                setEntities(updatedEntities.data);
+                toast.success("Entité supprimée avec succès");
+              } catch (err) {
+                toast.error(err.response?.data?.message || "Erreur lors de la suppression");
+              }
+              toast.dismiss(t.id);
+            }}
+          >
+            Confirmer
+          </button>
+          <button 
+            className="delete-cancel-btn"
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Annuler
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: 5000,
+      position: 'top-center',
+      style: {
+        background: '#fff',
+        color: '#333',
+        padding: '16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        maxWidth: '400px',
+        width: '100%'
       }
-    }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -95,14 +128,16 @@ const Entity = () => {
       
       if (formData.id) {
         await axios.put(`http://localhost:5000/api/entites/${formData.id}`, formattedData);
+        toast.success("Entité mise à jour avec succès");
       } else {
         await axios.post("http://localhost:5000/api/entites", formattedData);
+        toast.success("Entité créée avec succès");
       }
       const updatedEntities = await axios.get("http://localhost:5000/api/entites");
       setEntities(updatedEntities.data);
       setIsModalOpen(false);
     } catch (err) {
-      setError(err.response?.data?.message || "Erreur lors de l'enregistrement");
+      toast.error(err.response?.data?.message || "Erreur lors de l'enregistrement");
     }
   };
 

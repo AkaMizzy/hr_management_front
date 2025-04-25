@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast';
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { FaGoogle, FaGithub } from "react-icons/fa";
 import pic1 from "../Assets/images/pic1.jpeg";
 
 import "./auth.css";
@@ -18,6 +17,7 @@ const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -26,9 +26,11 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     if (form.password !== form.confirmPassword) {
       setError("Les mots de passe ne correspondent pas");
+      setIsLoading(false);
       return;
     }
 
@@ -43,6 +45,8 @@ const RegisterForm = () => {
       navigate("/login");
     } catch (err) {
       toast.error(err.response?.data?.message || "Erreur d'inscription");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -132,23 +136,14 @@ const RegisterForm = () => {
                 </button>
               </div>
 
-              <button type="submit" className="auth-button">
-                S'inscrire
+              <button 
+                type="submit" 
+                className="auth-button"
+                disabled={isLoading}
+              >
+                {isLoading ? "Inscription en cours..." : "S'inscrire"}
               </button>
             </form>
-
-            <div className="divider">
-              <span>ou s'inscrire avec</span>
-            </div>
-
-            <div className="social-login">
-              <button className="social-button google">
-                <FaGoogle />
-              </button>
-              <button className="social-button github">
-                <FaGithub />
-              </button>
-            </div>
 
             <div className="auth-footer">
               <p>

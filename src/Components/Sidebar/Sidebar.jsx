@@ -67,19 +67,7 @@ const Sidebar = ({ collapsed, onCollapse }) => {
         >
             
             
-            <div className="user-profile">
-                <Avatar 
-                    size={collapsed ? 36 : 48} 
-                    icon={<UserOutlined />}
-                    className="user-avatar"
-                />
-                {!collapsed && (
-                    <div className="user-info">
-                        <h3 className="user-name">Admin User</h3>
-                        <p className="user-role">Administrator</p>
-                    </div>
-                )}
-            </div>
+           
             
             <div className="menu-container">
                 <Menu
@@ -92,17 +80,7 @@ const Sidebar = ({ collapsed, onCollapse }) => {
                 />
             </div>
             
-            <div className="logout-container">
-                <Button 
-                    type="primary" 
-                    danger 
-                    icon={<LogoutOutlined />} 
-                    onClick={handleLogout}
-                    className="logout-button"
-                >
-                    {!collapsed && 'Déconnexion'}
-                </Button>
-            </div>
+          
         </Sider>
     );
 };

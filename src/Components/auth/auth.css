@@ -183,8 +183,6 @@ body {
   align-items: center;
   text-align: center;
   margin: 1.5rem 0;
-  color: #999;
-  font-size: 0.9rem;
 }
 
 .divider::before,
@@ -196,6 +194,8 @@ body {
 
 .divider span {
   padding: 0 1rem;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 /* Social login */
@@ -203,32 +203,45 @@ body {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin: 1rem 0;
 }
 
 .social-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid #e0e0e0;
-  background-color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
 }
 
-.social-button:hover {
-  background-color: #f5f5f5;
+.social-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .social-button.google {
-  color: #DB4437;
+  background-color: #DB4437;
+  color: white;
 }
 
-.social-button.github {
-  color: #333;
+.social-button.google:hover:not(:disabled) {
+  background-color: #C53929;
+  transform: scale(1.05);
+}
+
+.social-button.facebook {
+  background-color: #4267B2;
+  color: white;
+}
+
+.social-button.facebook:hover:not(:disabled) {
+  background-color: #365899;
+  transform: scale(1.05);
 }
 
 /* Footer */

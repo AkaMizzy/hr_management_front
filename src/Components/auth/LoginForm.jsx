@@ -1,10 +1,11 @@
+//LoginForm.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-hot-toast';
 import { FiEye, FiEyeOff } from "react-icons/fi";
-import { FaGoogle, FaGithub } from "react-icons/fa";
 import pic1 from "../Assets/images/pic1.jpeg";
+import { API_BASE_URL, setToken, setUserData } from "../../api/constants";
 
 import "./auth.css";
 
@@ -12,6 +13,7 @@ const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -20,13 +22,27 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/login", form);
-      localStorage.setItem("token", res.data.token);
+      const res = await axios.post(`${API_BASE_URL}/login`, form);
+      
+      // Set token using helper
+      setToken(res.data.token);
+      
+      // Set user data using helper
+      const userData = {
+        name: res.data.user.name || res.data.user.fullName || res.data.user.username || "Utilisateur",
+        email: res.data.user.email
+      };
+      
+      setUserData(userData);
+      
       toast.success("Connexion réussie !");
       navigate("/dashboard");
     } catch (err) {
       toast.error(err.response?.data?.message || "Erreur de connexion");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -99,23 +115,14 @@ const LoginForm = () => {
                 </button>
               </div>
               
-              <button type="submit" className="auth-button">
-                Se connecter
+              <button 
+                type="submit" 
+                className="auth-button"
+                disabled={isLoading}
+              >
+                {isLoading ? "Connexion en cours..." : "Se connecter"}
               </button>
             </form>
-            
-            <div className="divider">
-              <span>ou se connecter avec</span>
-            </div>
-            
-            <div className="social-login">
-              <button className="social-button google">
-                <FaGoogle />
-              </button>
-              <button className="social-button github">
-                <FaGithub />
-              </button>
-            </div>
             
             <div className="auth-footer">
               <p>

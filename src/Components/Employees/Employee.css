@@ -6,11 +6,7 @@
 }
 
 .employee-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 24px;
-  position: relative;
 }
 
 .employee-header h1 {
@@ -18,37 +14,45 @@
   font-size: 24px;
   font-weight: 600;
   color: #2c3e50;
-  white-space: nowrap;
-  margin-right: 20px;
+  margin-bottom: 16px;
 }
 
-.header-controls {
+.header-right {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  flex: 1;
-  justify-content: space-between;
+  gap: 16px;
 }
 
-.view-selector-container {
+.fixed-controls {
   display: flex;
+  flex-grow: 1;
+  max-width: 100%;
   align-items: center;
+  gap: 16px;
+  margin-right: 16px;
 }
 
 .view-selector {
-  margin-right: 15px;
-  white-space: nowrap;
   background: #f8f9fa;
   border-radius: 8px;
-  display: inline-flex;
+  padding: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.search-or-placeholder {
+  flex: 1;
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.search-placeholder {
+  height: 32px; /* Same height as search input */
 }
 
 .search-input {
-  width: 250px;
-}
-
-.add-button-container {
-  white-space: nowrap;
+  width: 100%;
 }
 
 .employee-actions {
@@ -87,53 +91,7 @@
   color: #2c3e50;
 }
 
-/* Hierarchy Tree Styling */
-.hierarchy-container {
-  margin-top: 10px;
-}
-
-.hierarchy-card {
-  margin-top: 16px;
-}
-
-.employee-tree {
-  padding: 12px 0;
-}
-
-.employee-node {
-  font-size: 14px;
-}
-
-.employee-phone {
-  color: #666;
-  font-size: 13px;
-}
-
-.hierarchy-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 0;
-}
-
-.hierarchy-filter {
-  margin-top: 10px;
-}
-
-.employee-responsable-select {
-  width: 100%;
-  max-width: 300px;
-}
-
 /* Responsive Adjustments */
-@media screen and (max-width: 992px) {
-  .header-controls {
-    flex-wrap: wrap;
-    row-gap: 10px;
-  }
-}
-
 @media screen and (max-width: 768px) {
   .employee-header {
     flex-direction: column;
@@ -141,13 +99,28 @@
     gap: 16px;
   }
   
-  .header-controls {
+  .employee-actions {
     width: 100%;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
   }
   
   .search-input {
     width: 100%;
+  }
+  
+  .fixed-controls {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
   
   .form-row {
@@ -157,12 +130,6 @@
   
   .form-item-half {
     width: 100%;
-  }
-  
-  .employee-actions {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
   }
 }
 
@@ -320,4 +287,4 @@
 /* Effet de survol pour tous les boutons */
 .ant-space .ant-btn:hover {
   background-color: rgba(0, 0, 0, 0.04);
-}
+} 

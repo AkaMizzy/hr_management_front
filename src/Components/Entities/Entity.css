@@ -547,4 +547,49 @@
     width: 90%;
     padding: 20px;
   }
+}
+
+/* Delete Confirmation Styles */
+.delete-confirmation {
+  text-align: center;
+}
+
+.delete-confirmation p {
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: var(--text-dark);
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.delete-confirm-btn,
+.delete-cancel-btn {
+  padding: 8px 24px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+}
+
+.delete-confirm-btn {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #ff7875;
+}
+
+.delete-cancel-btn {
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+}
+
+.delete-cancel-btn:hover {
+  background-color: var(--border-color);
 } 
