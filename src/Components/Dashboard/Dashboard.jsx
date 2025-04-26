@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Layout, Dropdown, Avatar, Menu,  Badge, Row, Col, Card, Statistic, Typography, Progress } from "antd";
-import { LogoutOutlined, BellOutlined,  TeamOutlined, BankOutlined, FileOutlined, CalendarOutlined, ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+import { Layout, Dropdown, Avatar, Menu, Divider, Badge, Row, Col, Card, Statistic, Typography, Progress } from "antd";
+import { LogoutOutlined, BellOutlined, UserOutlined, TeamOutlined, BankOutlined, FileOutlined, CalendarOutlined, ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
 import { toast } from 'react-hot-toast';
 import Sidebar from "../Sidebar/Sidebar";
+import DashboardCharts from "./DashboardCharts";
 import userImage from "../Assets/images/user.png";
 import "./Dashboard.css";
 import axios from 'axios';
@@ -325,7 +326,7 @@ const Dashboard = () => {
       >
         <Header className="dashboard-header">
           <div className="header-welcome">
-            Bienvenue
+            Bienvenue, {user.name}
           </div>
           <div className="header-right">
             <div className="notification-container">
@@ -414,11 +415,17 @@ const Dashboard = () => {
                     />
                   </Col>
                 </Row>
+                <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
+                  <Col xs={24}>
+                    <DashboardCharts />
+                  </Col>
+                </Row>
               </>
             )}
             <Outlet />
           </div>
         </Content>
+        
         <Footer className="dashboard-footer">
           <div className="footer-copyright">
             © {currentYear} MuntadaaCom. Tous droits réservés.

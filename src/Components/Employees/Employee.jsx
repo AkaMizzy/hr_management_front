@@ -24,13 +24,15 @@ import {
   EyeOutlined,
   TableOutlined,
   ApartmentOutlined,
-  PlusCircleOutlined
+  PlusCircleOutlined,
+  FileAddOutlined
 } from "@ant-design/icons";
 import { toast } from 'react-hot-toast';
 import moment from "moment";
 import "./Employee.css";
 import EmployeeHierarchy from "./EmployeeHierarchy";
 import InfoEmployesList from './InfoEmployesList';
+import AddInfoEmployeModal from './AddInfoEmployeModal';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -46,6 +48,7 @@ const Employee = () => {
   const [selectedResponsable, setSelectedResponsable] = useState(null);
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
   const [isInfoEmployesListVisible, setIsInfoEmployesListVisible] = useState(false);
+  const [isAddInfoModalVisible, setIsAddInfoModalVisible] = useState(false);
 
   useEffect(() => {
     fetchEmployees();
@@ -168,6 +171,18 @@ const Employee = () => {
     setIsInfoEmployesListVisible(false);
   };
 
+  const handleShowAddInfoModal = () => {
+    setIsAddInfoModalVisible(true);
+  };
+
+  const handleCloseAddInfoModal = () => {
+    setIsAddInfoModalVisible(false);
+    // Refresh employee info if needed
+    if (selectedEmployee) {
+      // You might want to refresh the employee data here
+    }
+  };
+
   const filteredEmployees = employees.filter(
     (employee) =>
       employee.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -248,7 +263,7 @@ const Employee = () => {
               <Radio.Button value="table"><TableOutlined /> Liste</Radio.Button>
               <Radio.Button value="hierarchy"><ApartmentOutlined /> Hiérarchie</Radio.Button>
             </Radio.Group>
-            
+
             {viewMode === "table" && (
               <div className="search-or-placeholder">
                 <Input
@@ -261,10 +276,10 @@ const Employee = () => {
               </div>
             )}
           </div>
-          
-          <Button 
-            type="default" 
-            icon={<PlusCircleOutlined />} 
+
+          <Button
+            type="default"
+            icon={<PlusCircleOutlined />}
             onClick={handleShowInfoEmployesList}
           >
             Champs Supplémentaires
@@ -315,6 +330,16 @@ const Employee = () => {
         onCancel={handleCancel}
         footer={[
           <Button key="cancel" onClick={handleCancel}>Annuler</Button>,
+          selectedEmployee && (
+            <Button
+              key="addInfo"
+              icon={<FileAddOutlined />}
+              onClick={handleShowAddInfoModal}
+              style={{ marginRight: 8 }}
+            >
+              Ajouter une information
+            </Button>
+          ),
           <Button key="submit" type="primary" onClick={handleFormSubmit}>
             {selectedEmployee ? "Mettre à jour" : "Ajouter"}
           </Button>,
@@ -362,7 +387,7 @@ const Employee = () => {
               {employees.filter(emp => !selectedEmployee || emp.id !== selectedEmployee.id)
                 .map(emp => (
                   <Option key={emp.id} value={emp.id}>{emp.prenom} {emp.nom}</Option>
-              ))}
+                ))}
             </Select>
           </Form.Item>
           <Form.Item name="telephone" label="Téléphone">
@@ -410,10 +435,20 @@ const Employee = () => {
       </Modal>
 
       {/* Info Employes List Modal */}
-      <InfoEmployesList 
+      <InfoEmployesList
         visible={isInfoEmployesListVisible}
         onCancel={handleCloseInfoEmployesList}
       />
+
+      {/* Add Info Employe Modal */}
+      {selectedEmployee && (
+        <AddInfoEmployeModal
+          visible={isAddInfoModalVisible}
+          onCancel={handleCloseAddInfoModal}
+          onSave={handleCloseAddInfoModal}
+          employeId={selectedEmployee.id}
+        />
+      )}
     </div>
   );
 };

@@ -10,6 +10,13 @@ body {
   background-color: #c5e7a7;
 }
 
+/* Auth wrapper for proper stacking context */
+.auth-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+}
+
 /* Auth page layout */
 .auth-page {
   display: flex;
@@ -33,11 +40,12 @@ body {
 /* Left side illustration */
 .auth-illustration {
   flex: 1;
-  background-color: #e3f7d1;
+  background-color: white; /* Taking the newer color */
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
+  padding: 2rem;
 }
 
 .illustration-content {
@@ -46,8 +54,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
+.illustration-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-height: 400px;
+}
+
+/* Keeping the placeholder for backward compatibility */
 .illustration-placeholder {
   width: 80%;
   height: 70%;
@@ -73,7 +90,7 @@ body {
 
 /* Logo */
 .auth-brand {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem; /* Taking the larger value */
   display: flex;
   align-items: center;
 }
@@ -81,7 +98,7 @@ body {
 .logo {
   color: #8bc34a;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.5rem; /* Taking the larger size */
 }
 
 /* Form elements */
@@ -94,7 +111,7 @@ body {
 
 .auth-subtitle {
   color: #666;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem; /* Taking the larger value */
   font-size: 0.9rem;
 }
 
@@ -109,7 +126,8 @@ body {
   border: 1px solid #e0e0e0;
   border-radius: 0.5rem;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
+  background-color: white;
 }
 
 .form-input:focus {
@@ -117,7 +135,8 @@ body {
   border-color: #8bc34a;
 }
 
-.password-input-group {
+/* Combining both password input styles */
+.password-input-group, .password-input-container {
   position: relative;
 }
 
@@ -130,6 +149,14 @@ body {
   border: none;
   color: #999;
   cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle:hover {
+  color: #8bc34a;
 }
 
 /* Forgot password link */
@@ -165,11 +192,11 @@ body {
   background-color: #8bc34a;
   color: white;
   border: none;
-  border-radius: 2rem;
+  border-radius: 0.5rem; /* Taking the newer squared style */
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
   margin-top: 1rem;
 }
 
@@ -177,7 +204,7 @@ body {
   background-color: #7cb342;
 }
 
-/* Divider */
+/* Dividers - keeping both styles */
 .divider {
   display: flex;
   align-items: center;
@@ -194,6 +221,13 @@ body {
 
 .divider span {
   padding: 0 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.auth-divider {
+  text-align: center;
+  margin: 1.5rem 0;
   color: #666;
   font-size: 0.9rem;
 }
@@ -244,20 +278,27 @@ body {
   transform: scale(1.05);
 }
 
-/* Footer */
+/* Footer - combining both styles */
 .auth-footer {
   text-align: center;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   color: #666;
   font-size: 0.9rem;
+}
+
+.auth-footer p {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .text-link {
   background: none;
   border: none;
   color: #8bc34a;
-  font-weight: 600;
   cursor: pointer;
+  font-weight: 500; /* Using the lighter weight from second file */
   padding: 0;
   font-size: 0.9rem;
 }
@@ -282,18 +323,58 @@ body {
   text-decoration: underline;
 }
 
-/* Mobile responsiveness */
+/* Mobile responsiveness - taking the more detailed approach */
 @media (max-width: 768px) {
   .auth-container {
     flex-direction: column;
     height: auto;
+    margin: 1rem;
   }
 
   .auth-illustration {
-    display: none;
+    height: 200px; /* Taking the explicit height instead of display: none */
   }
 
   .auth-form-container {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Loading styles */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(1px);
+  border-radius: 0.5rem;
+}
+
+.loading-content {
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.loading-text {
+  margin-top: 20px;
+  color: #123524;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

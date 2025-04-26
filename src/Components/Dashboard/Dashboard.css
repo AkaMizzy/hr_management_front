@@ -326,3 +326,58 @@
     font-size: 20px;
   }
 }
+
+/* Dashboard Charts */
+.dashboard-charts {
+  margin-top: 24px;
+}
+
+.dashboard-charts .ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-charts .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.dashboard-charts .ant-card-head-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.dashboard-charts .ant-card-body {
+  padding: 24px;
+}
+
+.recharts-default-tooltip {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  padding: 8px 12px !important;
+}
+
+.recharts-tooltip-label {
+  color: #666 !important;
+  font-size: 12px !important;
+  margin-bottom: 4px !important;
+}
+
+.recharts-tooltip-item {
+  color: #333 !important;
+  font-size: 14px !important;
+  padding: 4px 0 !important;
+}
+
+@media (max-width: 768px) {
+  .dashboard-charts .ant-card {
+    margin-bottom: 16px;
+  }
+  
+  .dashboard-charts .ant-card-body {
+    padding: 16px;
+  }
+}

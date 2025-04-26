@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import "antd/dist/reset.css"; // Import Ant Design styles
+import "antd/dist/reset.css"; 
 
 // Components
 import LoginForm from "./Components/auth/LoginForm";
@@ -34,16 +34,13 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordForm />} />
 
         {/* Protected Routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
+        <Route path="/" element={<ProtectedRoute>
               <Dashboard />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/login" replace />} />
-          <Route path="dashboard" element={<div>Tableau de bord</div>} />
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={null} />
           <Route path="entites" element={<Entity />} />
           <Route path="employes" element={<Employee />} />
           <Route path="documents" element={<Document />} />
