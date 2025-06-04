@@ -29,6 +29,13 @@
   margin: 0 auto;
 }
 
+/* Card styles */
+.ant-card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
 /* Header styles */
 .content-header {
   display: flex;
@@ -88,11 +95,11 @@
 
 /* Tree Container */
 .tree-container {
-  background: var(--bg-white);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: var(--shadow-md);
+  padding: 16px;
   min-height: 300px;
+  margin-top: 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-light);
 }
 
 .tree-wrapper {
@@ -102,118 +109,123 @@
 /* Tree Node Styles */
 .tree-node {
   position: relative;
-  margin: 4px 0;
+  margin: 8px 0;
   transition: var(--transition);
 }
 
 .tree-node-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 16px;
   border-radius: var(--radius-md);
-  background: var(--bg-light);
+  background: var(--bg-white);
+  border: 1px solid var(--border-color);
   margin: 4px 0;
   transition: var(--transition);
-  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
 }
 
 .tree-node-header:hover {
-  background: var(--bg-white);
-  border-color: var(--border-color);
-  box-shadow: var(--shadow-sm);
   transform: translateX(2px);
+  box-shadow: var(--shadow-md);
+  border-color: #d6e4ff;
 }
 
-.tree-node-controls {
-  margin-right: 12px;
+.tree-node-header.expanded {
+  background-color: #f0f7ff;
+  border-color: #91caff;
 }
 
-.tree-toggle-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
+.tree-node-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
+}
+
+.tree-node-toggle {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
   height: 24px;
   border-radius: 50%;
+  cursor: pointer;
   color: var(--text-muted);
   transition: var(--transition);
+  background-color: transparent;
 }
 
-.tree-toggle-btn:hover {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
+.tree-node-toggle.has-children {
+  background-color: #f0f7ff;
+  color: #1890ff;
+}
+
+.tree-node-toggle.has-children:hover {
+  background-color: #d6e4ff;
+  transform: scale(1.1);
+}
+
+.tree-node-toggle.no-children {
+  cursor: default;
 }
 
 .tree-leaf-indicator {
+  display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--primary-light);
-  margin: 0 8px;
+  background-color: var(--border-color);
 }
 
 .tree-node-content {
-  flex: 1;
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
-  min-height: 40px;
-}
-
-.tree-node-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .tree-node-title {
   font-weight: 600;
   color: var(--text-dark);
   font-size: 15px;
-  margin-right: 5px;
 }
 
 .tree-node-type {
   color: var(--text-muted);
   font-size: 13px;
   background-color: var(--bg-light);
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
 }
 
 .tree-node-status {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 3px 10px;
+  border-radius: 12px;
   font-size: 12px;
   font-weight: 500;
-  margin-left: 5px;
 }
 
 .tree-node-status.active {
-  background-color: var(--success-light);
-  color: var(--success-color);
+  background-color: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
 }
 
 .tree-node-status.non-active {
-  background-color: var(--danger-light);
-  color: var(--danger-color);
-}
-
-.tree-node-meta {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  background-color: #fff2f0;
+  color: #ff4d4f;
+  border: 1px solid #ffccc7;
 }
 
 .tree-node-actions {
   display: flex;
-  gap: 12px;
-  opacity: 0.4;
+  gap: 8px;
+  opacity: 0.6;
   transition: var(--transition);
 }
 
@@ -225,64 +237,37 @@
   background: none;
   border: none;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
   transition: var(--transition);
-  font-size: 18px;
 }
 
 .action-btn:hover {
-  background-color: var(--bg-light);
+  transform: scale(1.1);
 }
 
 .action-btn.edit-btn:hover {
-  color: var(--primary-color);
-  background-color: var(--primary-light);
+  background-color: #e6f7ff;
 }
 
 .action-btn.delete-btn:hover {
-  color: var(--danger-color);
-  background-color: var(--danger-light);
+  background-color: #fff1f0;
+}
+
+.action-btn.associate-btn:hover {
+  background-color: #f6ffed;
 }
 
 /* Tree hierarchy connectors */
-.tree-node-connector-lines {
-  position: absolute;
-  left: -20px;
-  top: 0;
-  bottom: 0;
-  display: flex;
-}
-
-.connector-line {
-  position: relative;
-  width: 20px;
-  height: 100%;
-}
-
-.connector-line::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 10px;
-  width: 1px;
-  background-color: var(--border-color);
-}
-
-.connector-line.last::before {
-  height: 24px;
-  bottom: auto;
-}
-
 .tree-node-children {
   position: relative;
-  margin-left: 32px;
+  margin-left: 40px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
 }
 
 .tree-node-children::before {
@@ -290,15 +275,28 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: -16px;
-  width: 1px;
-  background-color: var(--border-color);
+  left: -20px;
+  width: 2px;
+  background-color: #e6f7ff;
+}
+
+.tree-node-children.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.tree-node-children.expanded {
+  max-height: 2000px;
+  opacity: 1;
 }
 
 /* Empty state */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
+  background-color: var(--bg-white);
+  border-radius: var(--radius-md);
+  margin-top: 20px;
 }
 
 .empty-icon {
@@ -592,4 +590,30 @@
 
 .delete-cancel-btn:hover {
   background-color: var(--border-color);
+}
+
+/* Styling for selected rows in association tables */
+.ant-table-row-selected > td {
+  background-color: #f0f7ff !important;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.selected-employee {
+  border: 1px solid #e8e8e8;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.selected-employee p {
+  margin-bottom: 8px;
+}
+
+.selected-employee p:last-child {
+  margin-bottom: 0;
 } 

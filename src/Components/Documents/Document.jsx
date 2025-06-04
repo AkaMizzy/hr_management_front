@@ -1,6 +1,7 @@
 //Document.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import { 
   Button, 
   Modal, 
@@ -17,8 +18,7 @@ import {
   message,
   Alert
 } from 'antd';
-import { 
-  UploadOutlined, 
+import {
   EyeOutlined, 
   DownloadOutlined, 
   DeleteOutlined,
@@ -27,6 +27,7 @@ import {
   SearchOutlined,
   FileOutlined
 } from '@ant-design/icons';
+import './document.css';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -213,20 +214,22 @@ const Document = () => {
         <Space size="middle">
           <Tooltip title="Voir">
             <Button 
-              type="primary" 
+              type="text"
               icon={<EyeOutlined />} 
               onClick={() => handleViewDocument(record.id)}
             />
           </Tooltip>
           <Tooltip title="Télécharger">
             <Button 
-              type="primary" 
+              type="text"
               icon={<DownloadOutlined />} 
+              style={{ color: '#1890ff' }} 
               onClick={() => handleDownloadDocument(record.id)}
             />
           </Tooltip>
           <Tooltip title="Supprimer">
             <Button 
+              type="text"
               danger 
               icon={<DeleteOutlined />} 
               onClick={() => handleDelete(record.id)}
@@ -238,14 +241,44 @@ const Document = () => {
   ];
 
   const handleDelete = async (documentId) => {
-    try {
-      await axios.delete(`${API_BASE_URL}/api/documents/${documentId}`);
-      message.success('Document supprimé avec succès');
-      fetchDocuments(selectedEmployee);
-    } catch (error) {
-      console.error('Error deleting document:', error);
-      message.error('Erreur lors de la suppression du document');
-    }
+    toast((t) => (
+      <div className="delete-confirmation">
+        <p>Êtes-vous sûr de vouloir supprimer ce document ?</p>
+        <div className="delete-actions">
+          <button
+            className="delete-confirm-btn"
+            onClick={async () => {
+              try {
+                await axios.delete(`${API_BASE_URL}/api/documents/${documentId}`);
+                toast.success("Document supprimé avec succès");
+                fetchDocuments(selectedEmployee);
+              } catch (error) {
+                console.error('Error deleting document:', error);
+                toast.error(error.response?.data?.message || "Erreur lors de la suppression du document");
+              }
+              toast.dismiss(t.id);
+            }}
+          >
+            Confirmer
+          </button>
+          <button className="delete-cancel-btn" onClick={() => toast.dismiss(t.id)}>
+            Annuler
+          </button>
+        </div>
+      </div>
+    ), {
+      duration: 5000,
+      position: 'top-center',
+      style: {
+        background: '#fff',
+        color: '#333',
+        padding: '16px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        maxWidth: '400px',
+        width: '100%'
+      }
+    });
   };
 
   const getSelectedEmployeeName = () => {
@@ -254,37 +287,21 @@ const Document = () => {
   };
 
   return (
-    <div className="document-container" style={{ padding: '24px' }}>
+    <div className="document-container">
       <Card>
-        <div style={{ marginBottom: '20px' }}>
+        <div className="document-header">
           <Title level={2}>Gestion des Documents</Title>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="document-actions">
             <Button
               onClick={() => setIsEmployeeModalVisible(true)}
               size="large"
-              style={{
-                minWidth: '250px',
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 16px',
-                backgroundColor: selectedEmployee ? '#f0f7ff' : 'white',
-                borderColor: selectedEmployee ? '#1890ff' : undefined
-              }}
+              className={`employee-select-button ${selectedEmployee ? 'selected' : ''}`}
             >
-              <span style={{ 
-                color: selectedEmployee ? '#1890ff' : 'rgba(0, 0, 0, 0.85)',
-                flex: 1,
-                textAlign: 'left',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}>
+              <span className={`employee-name-text ${selectedEmployee ? 'selected' : 'default'}`}>
                 {getSelectedEmployeeName()}
               </span>
-              <UserOutlined style={{ color: selectedEmployee ? '#1890ff' : undefined }} />
+              <UserOutlined className={selectedEmployee ? 'selected' : ''} />
             </Button>
 
             <Button 
@@ -293,13 +310,7 @@ const Document = () => {
               onClick={() => setIsModalVisible(true)}
               disabled={!selectedEmployee}
               size="large"
-              style={{
-                width: 'fit-content',
-                height: '40px',
-                padding: '0 24px',
-                borderRadius: '6px',
-                boxShadow: '0 2px 0 rgba(0, 0, 0, 0.045)'
-              }}
+              className="add-document-button"
             >
               Ajouter un document
             </Button>
@@ -312,7 +323,7 @@ const Document = () => {
             description="Veuillez sélectionner un employé pour voir et gérer ses documents."
             type="info"
             showIcon
-            style={{ marginBottom: '20px' }}
+            className="alert-container"
           />
         ) : documents.length === 0 ? (
           <Alert
@@ -320,7 +331,7 @@ const Document = () => {
             description="Cet employé n'a pas encore de documents. Utilisez le bouton 'Ajouter un document' pour en ajouter."
             type="info"
             showIcon
-            style={{ marginBottom: '20px' }}
+            className="alert-container"
           />
         ) : (
           <Table 
@@ -332,42 +343,33 @@ const Document = () => {
         )}
 
         <Modal
-          title={<span style={{ color: '#1890ff' }}>Sélectionner un employé</span>}
+          title={<span className="modal-title">Sélectionner un employé</span>}
           open={isEmployeeModalVisible}
           onCancel={() => setIsEmployeeModalVisible(false)}
           footer={null}
           width={600}
           centered
         >
-          <div style={{ marginBottom: '16px' }}>
+          <div className="employee-search-container">
             <Input
               prefix={<SearchOutlined />}
               placeholder="Rechercher un employé..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              style={{ marginBottom: '16px' }}
+              className="employee-search-input"
             />
             <List
               dataSource={filteredEmployees}
               renderItem={(employee) => (
                 <List.Item
                   onClick={() => handleEmployeeSelect(employee)}
-                  style={{ 
-                    cursor: 'pointer',
-                    padding: '12px',
-                    borderRadius: '6px',
-                    backgroundColor: selectedEmployee === employee.id ? '#f0f7ff' : 'transparent',
-                    transition: 'all 0.3s ease'
-                  }}
-                  className="employee-list-item"
+                  className={`employee-list-item ${selectedEmployee === employee.id ? 'selected' : ''}`}
                 >
                   <List.Item.Meta
                     avatar={
                       <Avatar 
                         icon={<UserOutlined />} 
-                        style={{ 
-                          backgroundColor: selectedEmployee === employee.id ? '#1890ff' : '#d9d9d9'
-                        }}
+                        className={`employee-avatar ${selectedEmployee === employee.id ? 'selected' : 'default'}`}
                       />
                     }
                     title={`${employee.nom} ${employee.prenom}`}
@@ -375,19 +377,13 @@ const Document = () => {
                   />
                 </List.Item>
               )}
-              style={{ 
-                maxHeight: '400px', 
-                overflowY: 'auto',
-                border: '1px solid #f0f0f0',
-                borderRadius: '8px',
-                padding: '8px'
-              }}
+              className="employee-list"
             />
           </div>
         </Modal>
 
         <Modal
-          title={<span style={{ color: '#1890ff' }}>Ajouter un document</span>}
+          title={<span className="modal-title">Ajouter un document</span>}
           open={isModalVisible}
           onCancel={() => {
             setIsModalVisible(false);
@@ -401,7 +397,7 @@ const Document = () => {
             form={form}
             onFinish={handleUpload}
             layout="vertical"
-            style={{ marginTop: '20px' }}
+            className="upload-form"
           >
             <Form.Item
               name="description"
@@ -422,13 +418,13 @@ const Document = () => {
                   <FileOutlined />
                 </p>
                 <p className="ant-upload-text">Cliquez ou glissez-déposez un fichier ici</p>
-                <p className="ant-upload-hint" style={{ color: '#666' }}>
+                <p className="upload-hint">
                   Formats supportés : PDF, Word, JPEG, PNG (max 5MB)
                 </p>
               </Upload.Dragger>
             </Form.Item>
 
-            <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+            <Form.Item className="form-submit">
               <Button 
                 type="primary" 
                 htmlType="submit" 

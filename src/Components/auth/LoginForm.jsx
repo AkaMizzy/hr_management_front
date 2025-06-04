@@ -27,7 +27,7 @@ const LoginForm = () => {
     setError("");
     setIsLoading(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/login`, form);
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, form);
       
       // Set token using helper
       setToken(res.data.token);

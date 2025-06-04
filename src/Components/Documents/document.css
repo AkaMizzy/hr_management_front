@@ -1,0 +1,149 @@
+/* Document.css */
+
+.document-container {
+  padding: 24px;
+}
+
+.document-header {
+  margin-bottom: 20px;
+}
+
+.document-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.employee-select-button {
+  min-width: 250px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.employee-select-button.selected {
+  background-color: #f0f7ff;
+  border-color: #1890ff;
+}
+
+.employee-name-text {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employee-name-text.selected {
+  color: #1890ff;
+}
+
+.employee-name-text.default {
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.add-document-button {
+  width: fit-content;
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 6px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+}
+
+.alert-container {
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  color: #1890ff;
+}
+
+.employee-search-container {
+  margin-bottom: 16px;
+}
+
+.employee-search-input {
+  margin-bottom: 16px;
+}
+
+.employee-list {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.employee-list-item {
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.employee-list-item.selected {
+  background-color: #f0f7ff;
+}
+
+.employee-avatar.selected {
+  background-color: #1890ff;
+}
+
+.employee-avatar.default {
+  background-color: #d9d9d9;
+}
+
+.upload-form {
+  margin-top: 20px;
+}
+
+.upload-hint {
+  color: #666;
+}
+
+.form-submit {
+  margin-bottom: 0;
+  text-align: right;
+}
+
+/* Add delete confirmation styles */
+.delete-confirmation {
+  text-align: center;
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.delete-confirm-btn, 
+.delete-cancel-btn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.delete-confirm-btn {
+  background-color: #f5222d;
+  color: white;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #ff4d4f;
+}
+
+.delete-cancel-btn {
+  background-color: #f0f0f0;
+  color: #595959;
+}
+
+.delete-cancel-btn:hover {
+  background-color: #d9d9d9;
+} 

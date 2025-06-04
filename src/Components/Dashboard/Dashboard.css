@@ -216,6 +216,17 @@
   font-size: 14px;
 }
 
+/* Site layout transition */
+.site-layout {
+  transition: margin-left 0.4s cubic-bezier(0.2, 0, 0, 1);
+  will-change: margin-left;
+  margin-left: 240px;
+}
+
+.site-layout-collapsed {
+  margin-left: 80px;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .dashboard-header {

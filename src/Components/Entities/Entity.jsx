@@ -1,13 +1,29 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FiEdit2, FiTrash2, FiPlus, FiChevronRight, FiChevronDown } from "react-icons/fi";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  RightOutlined,
+  DownOutlined,
+  LoadingOutlined,
+  AppstoreOutlined,
+  ExclamationCircleOutlined,
+  UserAddOutlined,
+  TeamOutlined
+} from "@ant-design/icons";
 import { toast } from 'react-hot-toast';
+import { Button, Card, Spin, Empty } from 'antd';
 import "./Entity.css";
+import EmployeeAssociationModal from "./EmployeeAssociationModal";
 
 const Entity = () => {
   const [entities, setEntities] = useState([]);
   const [types, setTypes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
+  const [selectedEntity, setSelectedEntity] = useState(null);
+  const [showAllEmployees, setShowAllEmployees] = useState(false);
   const [formData, setFormData] = useState({
     id: "",
     tituler: "",
@@ -165,45 +181,77 @@ const Entity = () => {
   // Get flattened list of entities for parent selection
   const flatEntities = flattenEntityTree(entities);
 
+  // Expand only the first root entity by default when the list of entities changes
+  useEffect(() => {
+    if (entities.length > 0) {
+      setExpandedNodes(new Set([entities[0].id]));
+    }
+  }, [entities]);
+
+  const handleEmployeeAssociation = (entity = null) => {
+    setSelectedEntity(entity);
+    setShowAllEmployees(!entity);
+    setIsEmployeeModalOpen(true);
+  };
+
+  const handleEmployeeModalClose = () => {
+    setIsEmployeeModalOpen(false);
+    setSelectedEntity(null);
+    setShowAllEmployees(false);
+  };
+
   const renderTreeNode = (node) => {
     const isExpanded = expandedNodes.has(node.id);
     const hasChildren = node.children && node.children.length > 0;
 
     return (
       <div key={node.id} className="tree-node">
-        <div className="tree-node-header">
-          <span 
-            className="tree-node-toggle"
-            onClick={() => hasChildren && toggleNode(node.id)}
-          >
-            {hasChildren && (isExpanded ? <FiChevronDown /> : <FiChevronRight />)}
-          </span>
-          <span className="tree-node-content">
-            <div className="tree-node-left">
+        <div className={`tree-node-header ${isExpanded && hasChildren ? 'expanded' : ''}`}>
+          <div className="tree-node-left">
+            <span 
+              className={`tree-node-toggle ${hasChildren ? 'has-children' : 'no-children'}`}
+              onClick={() => hasChildren && toggleNode(node.id)}
+            >
+              {hasChildren ? (
+                isExpanded ? <DownOutlined /> : <RightOutlined />
+              ) : (
+                <span className="tree-leaf-indicator"></span>
+              )}
+            </span>
+            <div className="tree-node-content">
               <span className="tree-node-title">{node.tituler}</span>
               <span className="tree-node-type">{node.type_name}</span>
               <span className={`tree-node-status ${node.status}`}>
                 {node.status === "active" ? "Actif" : "Non actif"}
               </span>
             </div>
-          </span>
+          </div>
+          
           <div className="tree-node-actions">
+            <button
+              className="action-btn associate-btn"
+              onClick={() => handleEmployeeAssociation(node)}
+              title="Associer des employés"
+            >
+              <UserAddOutlined style={{ color: '#52c41a' }} />
+            </button>
             <button
               className="action-btn edit-btn"
               onClick={() => handleEdit(node)}
             >
-              <FiEdit2 />
+              <EditOutlined style={{ color: '#1890ff' }} />
             </button>
             <button
               className="action-btn delete-btn"
               onClick={() => handleDelete(node.id)}
             >
-              <FiTrash2 />
+              <DeleteOutlined style={{ color: '#ff4d4f' }} />
             </button>
           </div>
         </div>
-        {hasChildren && isExpanded && (
-          <div className="tree-node-children">
+        
+        {hasChildren && (
+          <div className={`tree-node-children ${isExpanded ? 'expanded' : 'collapsed'}`}>
             {node.children.map(child => renderTreeNode(child))}
           </div>
         )}
@@ -211,22 +259,63 @@ const Entity = () => {
     );
   };
 
-  if (loading) return <div className="loading">Chargement...</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (loading) return (
+    <div className="content-body">
+      <Card>
+        <div className="loading-container">
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 36 }} spin />} />
+          <p>Chargement des entités...</p>
+        </div>
+      </Card>
+    </div>
+  );
+  
+  if (error) return (
+    <div className="content-body">
+      <Card>
+        <div className="error-container">
+          <div className="notification error-notification">
+            {error}
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
 
   return (
     <div className="content-body">
-      <div className="content-header">
-        <h1 className="content-title">Gestion des entités</h1>
-        <button className="btn-primary" onClick={handleAdd}>
-          <FiPlus style={{ marginRight: "8px" }} />
-          Ajouter une entité
-        </button>
-      </div>
+      <Card>
+        <div className="content-header">
+          <h1 className="content-title">Gestion des entités</h1>
+          <div className="header-buttons">
+            <Button 
+              onClick={() => handleEmployeeAssociation()}
+              icon={<TeamOutlined />}
+              style={{ marginRight: '10px' }}
+            >
+              Gestion des associations
+            </Button>
+            <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+              Ajouter une entité
+            </Button>
+          </div>
+        </div>
 
-      <div className="tree-container">
-        {entities.map(node => renderTreeNode(node))}
-      </div>
+        <div className="tree-container">
+          {entities.length > 0 ? (
+            entities.map(node => renderTreeNode(node))
+          ) : (
+            <Empty 
+              description="Aucune entité trouvée" 
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            >
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+                Créer votre première entité
+              </Button>
+            </Empty>
+          )}
+        </div>
+      </Card>
 
       {isModalOpen && (
         <div className="modal-overlay">
@@ -324,6 +413,17 @@ const Entity = () => {
           </div>
         </div>
       )}
+
+      {/* Employee Association Modal */}
+      <EmployeeAssociationModal
+        visible={isEmployeeModalOpen}
+        onCancel={handleEmployeeModalClose}
+        entity={selectedEntity}
+        showAllEmployees={showAllEmployees}
+        onSuccess={() => {
+          toast.success("Association mise à jour avec succès");
+        }}
+      />
     </div>
   );
 };

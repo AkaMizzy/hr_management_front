@@ -34,7 +34,7 @@ const ResetPasswordForm = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/reset-password", form);
+      const res = await axios.post("http://localhost:5000/api/auth/reset-password", form);
       setSuccess(true);
       setTimeout(() => {
         navigate("/login");

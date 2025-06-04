@@ -39,8 +39,8 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={null} />
+          <Route index element={<Navigate to="/login" replace />} />
+          <Route path="/dashboard" element={<div>Tableau de bord</div>} />
           <Route path="entites" element={<Entity />} />
           <Route path="employes" element={<Employee />} />
           <Route path="documents" element={<Document />} />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Layout, Dropdown, Avatar, Menu, Divider, Badge, Row, Col, Card, Statistic, Typography, Progress } from "antd";
-import { LogoutOutlined, BellOutlined, UserOutlined, TeamOutlined, BankOutlined, FileOutlined, CalendarOutlined, ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+import { Layout, Dropdown, Avatar, Menu, Badge, Row, Col, Card, Statistic, Typography, Progress } from "antd";
+import { LogoutOutlined, BellOutlined, TeamOutlined, BankOutlined, FileOutlined, CalendarOutlined, ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
 import { toast } from 'react-hot-toast';
 import Sidebar from "../Sidebar/Sidebar";
 import DashboardCharts from "./DashboardCharts";
@@ -321,8 +321,7 @@ const Dashboard = () => {
     <Layout style={{ minHeight: "100vh" }}>
       <Sidebar collapsed={collapsed} onCollapse={handleSidebarCollapse} />
       <Layout 
-        className={`site-layout ${collapsed ? 'site-layout-collapsed' : ''}`} 
-        style={{ marginLeft: collapsed ? '80px' : '240px' }}
+        className={`site-layout ${collapsed ? 'site-layout-collapsed' : ''}`}
       >
         <Header className="dashboard-header">
           <div className="header-welcome">

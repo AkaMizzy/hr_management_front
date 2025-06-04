@@ -1,13 +1,11 @@
 import React from 'react';
-import { Layout, Menu, Button, Avatar } from 'antd';
+import { Layout, Menu } from 'antd';
 import {
     TeamOutlined,
     BankOutlined,
     FileTextOutlined,
     CalendarOutlined,
     DashboardOutlined,
-    LogoutOutlined,
-    UserOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
@@ -45,42 +43,18 @@ const Sidebar = ({ collapsed, onCollapse }) => {
             key: 'conge',
             icon: <CalendarOutlined />,
             label: 'Gestion des congés',
-        }, 
+        },
     ];
 
     const handleMenuClick = ({ key }) => {
         navigate(`/${key}`);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("token");
-        navigate("/login");
-    };
-
     return (
-        <Sider
-            className="sidebar"
-            width={240}
-            collapsible
-            collapsed={collapsed}
-            onCollapse={onCollapse}
-        >
-            
-            
-           
-            
+        <Sider className="sidebar" width={240} collapsible collapsed={collapsed} onCollapse={onCollapse}>
             <div className="menu-container">
-                <Menu
-                    theme="light"
-                    mode="inline"
-                    selectedKeys={[selectedKey]}
-                    items={menuItems}
-                    onClick={handleMenuClick}
-                    className="sidebar-menu"
-                />
+                <Menu theme="light" mode="inline" selectedKeys={[selectedKey]} items={menuItems} onClick={handleMenuClick} className="sidebar-menu" />
             </div>
-            
-          
         </Sider>
     );
 };
