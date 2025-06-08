@@ -1,0 +1,73 @@
+.employee-dashboard {
+  background: #f0f2f5;
+}
+
+.employee-dashboard .ant-layout-header {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 24px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+}
+
+.employee-dashboard .ant-layout-content {
+  margin: 24px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 4px;
+  min-height: 280px;
+}
+
+.employee-dashboard .ant-card {
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.employee-dashboard .ant-card:hover {
+  box-shadow: 0 4px 12px rgba(0,21,41,.12);
+}
+
+.employee-dashboard .ant-statistic-title {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.employee-dashboard .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.employee-tasks .ant-table-wrapper {
+  background: #fff;
+  border-radius: 4px;
+}
+
+.employee-tasks .ant-table-thead > tr > th {
+  background: #fafafa;
+  font-weight: 500;
+}
+
+.employee-tasks .ant-input-search {
+  max-width: 300px;
+  margin-bottom: 16px;
+}
+
+.employee-tasks .ant-tag {
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .employee-dashboard .ant-layout-content {
+    margin: 12px;
+    padding: 16px;
+  }
+
+  .employee-dashboard .ant-col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+} 

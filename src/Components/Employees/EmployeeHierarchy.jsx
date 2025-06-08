@@ -36,7 +36,7 @@ const EmployeeHierarchy = ({ selectedManager = null }) => {
   const buildHierarchyTree = () => {
     // First identify root nodes (employees with no responsable or selected manager)
     const rootId = selectedManager ? selectedManager.id : null;
-    const roots = allEmployees.filter(emp => emp.responsable_id === rootId);
+    const roots = allEmployees.filter(emp => emp.manager_id=== rootId);
     
     if (roots.length === 0 && rootId) {
       // If a specific manager is selected but has no subordinates
@@ -53,7 +53,7 @@ const EmployeeHierarchy = ({ selectedManager = null }) => {
 
   const buildEmployeeNode = (employee) => {
     // Find all subordinates for this employee
-    const subordinates = allEmployees.filter(emp => emp.responsable_id === employee.id);
+    const subordinates = allEmployees.filter(emp => emp.manager_id === employee.id);
     
     // Create the node
     const node = {

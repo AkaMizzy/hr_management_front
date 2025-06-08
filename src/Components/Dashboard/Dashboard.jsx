@@ -133,7 +133,8 @@ const Dashboard = () => {
       const entitiesCount = entitiesRes.data.length;
       
       // Récupérer les statistiques des documents
-      const documentsRes = await axios.get('http://localhost:5000/api/documents');
+      const documentsRes = 0;
+      //await axios.get('http://localhost:5000/api/documents');
       const documentsCount = documentsRes.data.length;
       
       // Récupérer les statistiques des congés

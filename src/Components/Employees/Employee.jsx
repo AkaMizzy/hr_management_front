@@ -374,7 +374,7 @@ const Employee = () => {
           <Form.Item name="email" label="Email" rules={[{ required: true }, { type: "email" }]}>
             <Input placeholder="Email" />
           </Form.Item>
-          <Form.Item name="responsable_id" label="Responsable">
+          <Form.Item name="manager_id" label="Responsable">
             <Select
               placeholder="Sélectionner un responsable"
               allowClear

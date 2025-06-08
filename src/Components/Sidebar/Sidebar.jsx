@@ -6,6 +6,7 @@ import {
     FileTextOutlined,
     CalendarOutlined,
     DashboardOutlined,
+    CheckSquareOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
@@ -33,6 +34,11 @@ const Sidebar = ({ collapsed, onCollapse }) => {
             key: 'employes',
             icon: <TeamOutlined />,
             label: 'Gestion des employés',
+        },
+        {
+            key: 'taches',
+            icon: <CheckSquareOutlined />,
+            label: 'Gestion des tâches',
         },
         {
             key: 'documents',

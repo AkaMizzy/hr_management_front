@@ -35,7 +35,10 @@ const LoginForm = () => {
       // Set user data using helper
       const userData = {
         name: res.data.user.name || res.data.user.fullName || res.data.user.username || "Utilisateur",
-        email: res.data.user.email
+        email: res.data.user.email,
+        role: res.data.user.role,
+        employe_id: res.data.user.employe_id,
+        employe_info: res.data.user.employe_info
       };
       
       setUserData(userData);
@@ -43,10 +46,14 @@ const LoginForm = () => {
       toast.success("Connexion réussie !");
       setShowLoading(true);
       
-      // Attendre 4 secondes avant de rediriger vers le dashboard
+      // Redirect based on role
       setTimeout(() => {
-        navigate("/dashboard");
-      }, 4000);
+        if (userData.role === 'manager') {
+          navigate("/dashboard");
+        } else if (userData.role === 'employe') {
+          navigate("/employee-dashboard");
+        }
+      }, 1700);
     } catch (err) {
       toast.error(err.response?.data?.message || "Erreur de connexion");
     } finally {

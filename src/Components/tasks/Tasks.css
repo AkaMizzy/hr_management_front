@@ -1,0 +1,136 @@
+.task-container {
+  padding: 24px;
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.task-header h1 {
+  margin: 0;
+  font-size: 24px;
+  color: #123524;
+}
+
+.header-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.search-input {
+  width: 300px;
+}
+
+.task-table {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Task Details Styles */
+.task-details {
+  padding: 16px;
+}
+
+.task-details h3 {
+  margin: 0 0 16px 0;
+  color: #123524;
+  font-size: 20px;
+}
+
+.task-description {
+  margin-bottom: 24px;
+  color: #666;
+  white-space: pre-wrap;
+}
+
+.task-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-item strong {
+  color: #123524;
+  min-width: 120px;
+}
+
+/* Delete Confirmation Styles */
+.delete-confirmation {
+  text-align: center;
+}
+
+.delete-confirmation p {
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: #333;
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.delete-confirm-btn,
+.delete-cancel-btn {
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.delete-confirm-btn {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #ff7875;
+}
+
+.delete-cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.delete-cancel-btn:hover {
+  background-color: #d9d9d9;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .task-container {
+    padding: 16px;
+  }
+
+  .task-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .header-right {
+    flex-direction: column;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .task-info {
+    grid-template-columns: 1fr;
+  }
+} 
