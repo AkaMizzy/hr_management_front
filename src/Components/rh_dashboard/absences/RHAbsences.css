@@ -1,0 +1,72 @@
+.rh-absences-container {
+  padding: 0;
+}
+
+.absence-details {
+  padding: 8px;
+}
+
+.absence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.absence-info {
+  margin-bottom: 24px;
+}
+
+.info-item {
+  margin-bottom: 16px;
+}
+
+.info-item strong {
+  margin-right: 8px;
+}
+
+.validation-section {
+  margin-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+}
+
+.validation-steps {
+  margin-top: 16px;
+}
+
+.validation-step {
+  background-color: #fafafa;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.justification {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.validation-actions {
+  margin-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.validation-info {
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+} 

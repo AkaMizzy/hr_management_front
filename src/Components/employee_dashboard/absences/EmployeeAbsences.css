@@ -1,0 +1,247 @@
+.employee-absences {
+  min-height: 100%;
+}
+
+/* Page header with title and add button */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.absence-form-card,
+.absence-history-card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  height: 100%;
+  margin-bottom: 24px;
+}
+
+.absence-form-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.absence-history-card .ant-card-body {
+  padding: 0;
+}
+
+.absence-history-card .ant-card-head {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 16px 24px;
+}
+
+.employee-absences .ant-table {
+  background-color: #fff;
+}
+
+.employee-absences .ant-table-thead > tr > th {
+  background-color: #fafafa;
+  font-weight: bold;
+  border-bottom: 1px solid #f0f0f0;
+  padding: 8px 16px;
+}
+
+.employee-absences .ant-table-tbody > tr > td {
+  padding: 8px 16px;
+}
+
+/* Motif cell styling for text wrapping */
+.motif-cell {
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: normal;
+  max-height: 80px;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+.employee-absences .ant-table-tbody > tr:hover > td {
+  background-color: #f5f5f5;
+}
+
+.employee-absences .ant-table-cell .ant-space-vertical {
+  width: 100%;
+}
+
+.employee-absences .ant-table-cell .ant-btn {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.employee-absences .ant-table-cell .ant-btn .anticon {
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+.employee-absences .ant-form-item-label > label {
+  font-weight: 500;
+}
+
+.employee-absences .ant-divider {
+  margin: 12px 0;
+}
+
+.justification-text {
+  color: #ff4d4f;
+  white-space: normal;
+  word-break: break-word;
+  display: block;
+  max-width: 250px;
+}
+
+/* Details Modal Styles */
+.employee-absences-container {
+  padding: 0;
+}
+
+.absences-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.absences-header h4 {
+  margin-bottom: 0;
+}
+
+/* Action buttons styling */
+.ant-table-cell .ant-space {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.ant-table-cell .ant-btn {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 4px 12px;
+}
+
+.ant-table-cell .ant-divider-vertical {
+  height: 28px;
+  margin: 0 8px;
+}
+
+.absence-details {
+  padding: 8px;
+}
+
+.absence-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.absence-info {
+  margin-bottom: 24px;
+  background-color: #fafafa;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.info-item {
+  margin-bottom: 16px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-item strong {
+  margin-right: 8px;
+}
+
+.validation-section {
+  margin-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+}
+
+.validation-steps {
+  margin-top: 16px;
+}
+
+.validation-step {
+  background-color: #fafafa;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.justification {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.validation-actions {
+  margin-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.annulable-status {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+/* Add responsive styling for smaller screens */
+@media (max-width: 576px) {
+  .ant-table-cell .ant-space {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .ant-table-cell .ant-space-item {
+    margin-bottom: 8px;
+  }
+  
+  .ant-table-cell .ant-divider-vertical {
+    display: none;
+  }
+  
+  .ant-table-cell .ant-btn {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Ensure the confirmation modal buttons are well spaced */
+.delete-confirmation-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .absences-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+} 

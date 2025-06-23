@@ -5,21 +5,35 @@ import "antd/dist/reset.css";
 
 // Components
 import LoginForm from "./Components/auth/LoginForm";
-import RegisterForm from "./Components/auth/RegisterForm";
 import ForgotPasswordForm from "./Components/auth/ForgotPasswordForm";
 import ResetPasswordForm from "./Components/auth/ResetPasswordForm";
-import Dashboard from "./Components/Dashboard/Dashboard";
-import Entity from "./Components/Entities/Entity";
-import Employee from "./Components/Employees/Employee";
-import Document from "./Components/Documents/Document";
+import Dashboard from "./Components/Manager/Dashboard/Dashboard";
+import Entity from "./Components/Manager/Entities/Entity";
+import Employee from "./Components/Manager/Employees/Employee";
+import Document from "./Components/Manager/Documents/Document";
 import EmployeeDashboard from "./Components/employee_dashboard/EmployeeDashboard";
-import TaskList from "./Components/tasks/TaskList";
+import TaskList from "./Components/Manager/tasks/TaskList";
 import EmployeeTasks from "./Components/employee_dashboard/employee_tasks/EmployeeTasks";
 import EmployeeProfile from "./Components/employee_dashboard/profile/EmployeeProfile";
 import EmployeeDocuments from "./Components/employee_dashboard/documents/EmployeeDocuments";
+import EmployeeCalendar from './Components/employee_dashboard/calendar/EmployeeCalendar';
+import EmployeeAttestations from './Components/employee_dashboard/attestations/EmployeeAttestations';
+import EmployeeAbsences from './Components/employee_dashboard/absences/EmployeeAbsences';
+import EmployeeConges from './Components/employee_dashboard/conges/EmployeeConges';
+import ManagerAttestations from './Components/Manager/Attestations/ManagerAttestations';
+import ManagerAbsences from './Components/Manager/Absences/ManagerAbsences';
+import ManagerConges from './Components/Manager/Conges/ManagerConges';
+
+// Import RH Dashboard components
+import RHDashboard from './Components/rh_dashboard/RHDashboard';
+import RHHome from './Components/rh_dashboard/home/RHHome';
+import UserManagement from './Components/rh_dashboard/users/UserManagement';
+import RHAttestations from './Components/rh_dashboard/attestations/RHAttestations';
+import RHAbsences from './Components/rh_dashboard/absences/RHAbsences';
+import RHConges from './Components/rh_dashboard/conges/RHConges';
 
 // Protected Route Component
-const ProtectedRoute = ({ children, allowedRoles = ['manager', 'employe'] }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const token = localStorage.getItem("token");
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
   const userRole = userData.role;
@@ -28,12 +42,14 @@ const ProtectedRoute = ({ children, allowedRoles = ['manager', 'employe'] }) => 
     return <Navigate to="/login" replace />;
   }
 
-  if (!allowedRoles.includes(userRole)) {
+  if (allowedRoles && !allowedRoles.includes(userRole)) {
     // Redirect to appropriate dashboard based on role
     if (userRole === 'manager') {
       return <Navigate to="/dashboard" replace />;
     } else if (userRole === 'employe') {
       return <Navigate to="/employee-dashboard" replace />;
+    } else if (userRole === 'responsable_rh') {
+      return <Navigate to="/rh-dashboard" replace />;
     }
     return <Navigate to="/login" replace />;
   }
@@ -48,7 +64,6 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginForm />} />
-        <Route path="/register" element={<RegisterForm />} />
         <Route path="/forget-password" element={<ForgotPasswordForm />} />
         <Route path="/reset-password" element={<ResetPasswordForm />} />
 
@@ -67,7 +82,9 @@ function App() {
           <Route path="employes" element={<Employee />} />
           <Route path="taches" element={<TaskList />} />
           <Route path="documents" element={<Document />} />
-          <Route path="conge" element={<div>Gestion des congés</div>} />
+          <Route path="attestations" element={<ManagerAttestations />} />
+          <Route path="absences" element={<ManagerAbsences />} />
+          <Route path="conges" element={<ManagerConges />} />
         </Route>
 
         {/* Employee Routes */}
@@ -82,9 +99,26 @@ function App() {
           <Route index element={<Navigate to="profile" replace />} />
           <Route path="profile" element={<EmployeeProfile />} />
           <Route path="tasks" element={<EmployeeTasks />} />
+          <Route path="calendar" element={<EmployeeCalendar />} />
           <Route path="documents" element={<EmployeeDocuments />} />
-          <Route path="calendar" element={<div>Calendrier</div>} />
+          <Route path="attestations" element={<EmployeeAttestations />} />
+          <Route path="absences" element={<EmployeeAbsences />} />
+          <Route path="conges" element={<EmployeeConges />} />
           <Route path="notifications" element={<div>Notifications</div>} />
+        </Route>
+
+        {/* RH Dashboard Routes */}
+        <Route path="/rh-dashboard" element={
+          <ProtectedRoute allowedRoles={['responsable_rh']}>
+            <RHDashboard />
+          </ProtectedRoute>
+        }>
+          <Route path="home" element={<RHHome />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="attestations" element={<RHAttestations />} />
+          <Route path="absences" element={<RHAbsences />} />
+          <Route path="conges" element={<RHConges />} />
+          <Route index element={<Navigate to="home" replace />} />
         </Route>
 
         {/* Catch all route */}

@@ -1,0 +1,227 @@
+.calendar-wrapper {
+  padding: 24px;
+}
+
+.calendar-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-container .ant-picker-calendar {
+  background: #fff;
+  padding: 16px;
+}
+
+/* Calendar Header Styles */
+.calendar-header {
+  height: 40px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.current-month {
+  font-size: 16px;
+  font-weight: 500;
+  color: #262626;
+  text-transform: capitalize;
+}
+
+.month-nav-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.month-nav-button:hover {
+  background: #f5f5f5;
+  color: #1890ff;
+}
+
+/* Hide the default mode switcher */
+.ant-picker-calendar-mode-switch {
+  display: none !important;
+}
+
+.task-legend {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+.task-legend .ant-tag {
+  margin: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.events {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.events .ant-badge-status {
+  width: 100%;
+  overflow: hidden;
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.date-cell {
+  height: 100%;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.date-cell:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-title {
+  cursor: pointer;
+  transition: color 0.3s;
+  font-weight: 500;
+}
+
+.task-title:hover {
+  opacity: 0.8;
+}
+
+.month-tasks {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  padding: 4px;
+}
+
+/* Calendar cell customization */
+.ant-picker-calendar-date {
+  height: 100%;
+}
+
+.ant-picker-calendar-date-content {
+  height: 100%;
+  padding: 0 !important;
+}
+
+.ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date-content {
+  height: 90px;
+  overflow-y: auto;
+}
+
+/* Day tasks modal */
+.day-tasks {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.day-tasks::-webkit-scrollbar {
+  width: 6px;
+}
+
+.day-tasks::-webkit-scrollbar-thumb {
+  background-color: #d9d9d9;
+  border-radius: 3px;
+}
+
+.day-tasks::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+}
+
+.task-card {
+  transition: all 0.3s;
+}
+
+.task-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-card .ant-card-head {
+  border-bottom: none;
+  min-height: 40px;
+}
+
+.task-card .ant-card-head-title {
+  padding: 8px 0;
+}
+
+.task-card .ant-descriptions {
+  margin-top: 8px;
+}
+
+.task-card .ant-descriptions-item-label {
+  font-weight: 500;
+  color: #666;
+}
+
+/* Scrollbar styling */
+.ant-picker-calendar-date-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ant-picker-calendar-date-content::-webkit-scrollbar-thumb {
+  background-color: #d9d9d9;
+  border-radius: 3px;
+}
+
+.ant-picker-calendar-date-content::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+}
+
+/* Modal styling */
+.ant-modal-content {
+  border-radius: 8px;
+}
+
+.ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #fafafa;
+  font-weight: 500;
+}
+
+/* Today cell highlight */
+.ant-picker-calendar-date-today .date-cell {
+  border: 1px solid #1890ff30;
+}
+
+/* Action cards in task details */
+.action-card {
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+
+.action-card .ant-card-head {
+  padding: 0 16px;
+  min-height: 40px;
+}
+
+.action-card .ant-card-head-title {
+  padding: 8px 0;
+  font-size: 14px;
+}
+
+.action-card .ant-card-body {
+  padding: 16px;
+}
+
+/* Task status colors */
+.ant-badge-status-success {
+  background: #52c41a;
+}
+
+.ant-badge-status-processing {
+  background: #1890ff;
+} 

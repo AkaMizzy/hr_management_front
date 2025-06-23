@@ -1,0 +1,63 @@
+.delete-confirmation {
+  text-align: center;
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  gap: 12px;
+}
+
+.delete-confirm-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #ff7875;
+}
+
+.delete-cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.delete-cancel-btn:hover {
+  background-color: #d9d9d9;
+}
+
+/* User management table styles */
+.user-table-container {
+  margin-top: 16px;
+}
+
+/* Search and add user button container */
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Status tags */
+.role-tag {
+  font-weight: 500;
+  padding: 2px 8px;
+}
+
+/* Employee association tag */
+.employee-tag {
+  font-weight: 500;
+  padding: 2px 8px;
+} 

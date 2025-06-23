@@ -5,7 +5,7 @@ import { LogoutOutlined, BellOutlined, TeamOutlined, BankOutlined, FileOutlined,
 import { toast } from 'react-hot-toast';
 import Sidebar from "../Sidebar/Sidebar";
 import DashboardCharts from "./DashboardCharts";
-import userImage from "../Assets/images/user.png";
+import userImage from "../../Assets/images/user.png";
 import "./Dashboard.css";
 import axios from 'axios';
 

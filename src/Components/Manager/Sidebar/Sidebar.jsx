@@ -7,9 +7,12 @@ import {
     CalendarOutlined,
     DashboardOutlined,
     CheckSquareOutlined,
+    FormOutlined,
+    CarryOutOutlined 
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
+import logo from '../../Assets/images/pic1.jpeg';
 
 const { Sider } = Layout;
 
@@ -46,8 +49,18 @@ const Sidebar = ({ collapsed, onCollapse }) => {
             label: 'Gestion des documents',
         },
         {
-            key: 'conge',
+            key: 'attestations',
+            icon: <FormOutlined />,
+            label: 'Gestion des Attestations',
+        },
+        {
+            key: 'absences',
             icon: <CalendarOutlined />,
+            label: 'Gestion des absences',
+        },
+        {
+            key: 'conges',
+            icon: <CarryOutOutlined  />,
             label: 'Gestion des congés',
         },
     ];
@@ -58,6 +71,11 @@ const Sidebar = ({ collapsed, onCollapse }) => {
 
     return (
         <Sider className="sidebar" width={240} collapsible collapsed={collapsed} onCollapse={onCollapse}>
+            <div className="logo-container-wrapper">
+                    <div className="logo-image-container">
+                        <img src={logo} alt="" className="logo-image" />
+                    </div>
+            </div>
             <div className="menu-container">
                 <Menu theme="light" mode="inline" selectedKeys={[selectedKey]} items={menuItems} onClick={handleMenuClick} className="sidebar-menu" />
             </div>

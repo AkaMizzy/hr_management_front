@@ -1,10 +1,8 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
 import { 
-  UserOutlined, 
-  CalendarOutlined, 
-  FileOutlined, 
-  CheckSquareOutlined,
+  TeamOutlined, 
+  DashboardOutlined,
   FormOutlined,
   ClockCircleOutlined,
   CarryOutOutlined 
@@ -14,43 +12,34 @@ import logo from '../../Assets/images/pic1.jpeg';
 
 const { Sider } = Layout;
 
-const EmployeeSidebar = ({ collapsed, onCollapse }) => {
+const RHSidebar = ({ collapsed, onCollapse }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const menuItems = [
     {
-      key: '/employee-dashboard/profile',
-      icon: <UserOutlined />,
-      label: 'Mon Profil'
+      key: '/rh-dashboard/home',
+      icon: <DashboardOutlined />,
+      label: 'Tableau de Bord'
     },
     {
-      key: '/employee-dashboard/tasks',
-      icon: <CheckSquareOutlined />,
-      label: 'Mes Tâches'
+      key: '/rh-dashboard/users',
+      icon: <TeamOutlined />,
+      label: 'Gestion Utilisateurs'
     },
+   
     {
-      key: '/employee-dashboard/calendar',
-      icon: <CalendarOutlined />,
-      label: 'Calendrier'
-    },
-    {
-      key: '/employee-dashboard/documents',
-      icon: <FileOutlined />,
-      label: 'Mes Documents'
-    },
-    {
-      key: '/employee-dashboard/attestations',
+      key: '/rh-dashboard/attestations',
       icon: <FormOutlined />,
       label: 'Attestations'
     },
     {
-      key: '/employee-dashboard/absences',
+      key: '/rh-dashboard/absences',
       icon: <ClockCircleOutlined />,
       label: 'Absences'
     },
     {
-      key: '/employee-dashboard/conges',
+      key: '/rh-dashboard/conges',
       icon: <CarryOutOutlined  />,
       label: 'Congés'
     },
@@ -104,9 +93,8 @@ const EmployeeSidebar = ({ collapsed, onCollapse }) => {
           borderRight: 'none'
         }}
       />
-      
     </Sider>
   );
 };
 
-export default EmployeeSidebar; 
+export default RHSidebar; 

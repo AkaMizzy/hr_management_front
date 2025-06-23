@@ -52,6 +52,11 @@ const LoginForm = () => {
           navigate("/dashboard");
         } else if (userData.role === 'employe') {
           navigate("/employee-dashboard");
+        } else if (userData.role === 'responsable_rh') {
+          navigate('/rh-dashboard');
+        } else {
+          // Default fallback
+          navigate("/");
         }
       }, 1700);
     } catch (err) {
@@ -61,9 +66,7 @@ const LoginForm = () => {
     }
   };
 
-  const handleGoToRegister = () => {
-    navigate("/register");
-  };
+  
 
   const handleForgotPassword = () => {
     navigate("/forget-password");
@@ -75,7 +78,7 @@ const LoginForm = () => {
         <div className="auth-container">
           <div className="auth-illustration">
             <div className="illustration-content">
-              <img src={pic1} alt="Illustration" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={pic1}  style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
           
@@ -151,11 +154,6 @@ const LoginForm = () => {
                 </button>
               </form>
               
-              <div className="auth-footer">
-                <p>
-                  Vous n'avez pas de compte? <button className="text-link" onClick={handleGoToRegister}>S'inscrire</button>
-                </p>
-              </div>
             </div>
           </div>
         </div>

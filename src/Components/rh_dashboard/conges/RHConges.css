@@ -1,0 +1,115 @@
+.rh-conges-container {
+  padding: 20px;
+}
+
+.rh-conges-container .ant-card {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.rh-conges-container .ant-card-head-title {
+  font-weight: 600;
+}
+
+.conge-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.conge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conge-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #f9f9f9;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.info-item {
+  display: flex;
+  gap: 8px;
+}
+
+.info-item strong {
+  min-width: 120px;
+}
+
+.validation-section {
+  margin-top: 10px;
+}
+
+.validation-step {
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.justification {
+  margin-top: 8px;
+}
+
+.validation-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.validation-info {
+  margin-bottom: 20px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+/* Tab styles */
+.ant-tabs-tab {
+  padding: 12px 16px;
+}
+
+/* Table styles */
+.ant-table-thead > tr > th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: #f0f7ff;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .conge-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .step-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-item strong {
+    min-width: auto;
+  }
+} 
