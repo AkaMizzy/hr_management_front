@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Input, Select, message, Typography, Space, Divider, Tag, Radio } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import moment from 'moment';
 
@@ -46,20 +46,14 @@ const CongeDetails = ({ visible, conge, onClose, refreshData }) => {
   const getStatusTag = (status) => {
     switch (status) {
       case 'pending':
-        return <Tag color="orange">En attente</Tag>;
+        return <Tag icon={<ClockCircleOutlined />} color="processing">En attente</Tag>;
       case 'approved':
-        return <Tag color="green">Approuvée</Tag>;
+        return <Tag icon={<CheckCircleOutlined />} color="success">Approuvée</Tag>;
       case 'rejected':
-        return <Tag color="red">Rejetée</Tag>;
+        return <Tag icon={<CloseCircleOutlined />} color="error">Rejetée</Tag>;
       default:
         return <Tag color="default">{status}</Tag>;
     }
-  };
-
-  const getAnnulableTag = (annulable) => {
-    return annulable ? 
-      <Tag color="green">Annulable</Tag> : 
-      <Tag color="red">Non-annulable</Tag>;
   };
 
   const formatDate = (dateString) => {
@@ -72,137 +66,140 @@ const CongeDetails = ({ visible, conge, onClose, refreshData }) => {
       open={visible}
       onCancel={onClose}
       width={700}
-      footer={null}
+      footer={[
+        <Button key="close" onClick={onClose}>
+          Fermer
+        </Button>
+      ]}
     >
       {conge && (
-        <div className="conge-details">
-          <div className="conge-header">
-            <Title level={4}>Demande de congé #{conge.id}</Title>
+        <div style={{ padding: '0 8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <Title level={4}>Demande de congé - {conge.employe_prenom} {conge.employe_nom}</Title>
             {getStatusTag(conge.status)}
           </div>
           
-          <div className="conge-info">
-            <div className="info-item">
-              <Text strong>Employé:</Text>
-              <Text>{conge.employe_prenom} {conge.employe_nom}</Text>
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Type de congé:</Text>
+            <Text>{conge.type_intitule}</Text>
+          </div>
+          
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date de début:</Text>
+            <Text>{formatDate(conge.date_debut)}</Text>
+          </div>
+          
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date de fin:</Text>
+            <Text>{formatDate(conge.date_fin)}</Text>
+          </div>
+          
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Nombre de jours:</Text>
+            <Text>{conge.nombre_jours}</Text>
+          </div>
+          
+          {conge.status !== 'pending' && conge.manager_validation && (
+            <div style={{ display: 'flex', marginBottom: '8px' }}>
+              <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Annulable:</Text>
+              <Text>{conge.manager_validation.annulable ? 'Oui' : 'Non'}</Text>
             </div>
-            <div className="info-item">
-              <Text strong>Date de début:</Text>
-              <Text>{formatDate(conge.date_debut)}</Text>
-            </div>
-            <div className="info-item">
-              <Text strong>Date de fin:</Text>
-              <Text>{formatDate(conge.date_fin)}</Text>
-            </div>
-            <div className="info-item">
-              <Text strong>Nombre de jours:</Text>
-              <Text>{conge.nombre_jours}</Text>
-            </div>
-            {conge.status !== 'pending' && conge.manager_validation && (
-              <div className="info-item">
-                <Text strong>Annulable:</Text>
-                {getAnnulableTag(conge.manager_validation.annulable)}
+          )}
+
+          <div style={{ marginTop: '24px' }}>
+            {conge.status === 'pending' && !conge.manager_validation && (
+              <div>
+                <Divider orientation="left">Validation</Divider>
+                <Form form={form} layout="vertical" initialValues={{ annulable: false }}>
+                  <Form.Item
+                    name="managerComment"
+                    label="Commentaires"
+                  >
+                    <TextArea rows={4} placeholder="Ajoutez vos commentaires concernant cette demande de congé" />
+                  </Form.Item>
+                  
+                  <Form.Item
+                    name="annulable"
+                    label="Permettre à l'employé d'annuler cette demande après approbation"
+                  >
+                    <Radio.Group>
+                      <Radio value={true}>Oui</Radio>
+                      <Radio value={false}>Non</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                  
+                  <div style={{ textAlign: 'center', marginTop: '24px' }}>
+                    <Space>
+                      <Button 
+                        onClick={() => handleValidate('rejected')} 
+                        icon={<CloseCircleOutlined />} 
+                        danger
+                        loading={loading && validationStatus === 'rejected'}
+                      >
+                        Rejeter
+                      </Button>
+                      <Button 
+                        type="primary" 
+                        onClick={() => handleValidate('approved')} 
+                        icon={<CheckCircleOutlined />}
+                        loading={loading && validationStatus === 'approved'}
+                      >
+                        Approuver
+                      </Button>
+                    </Space>
+                  </div>
+                </Form>
               </div>
             )}
-          </div>
 
-          {conge.status === 'pending' && !conge.manager_validation && (
-            <div className="validation-section">
-              <Title level={5}>Validation</Title>
-              <Form form={form} layout="vertical" initialValues={{ annulable: false }}>
-                <Form.Item
-                  name="managerComment"
-                  label="Commentaires"
-                >
-                  <TextArea rows={4} placeholder="Ajoutez vos commentaires concernant cette demande de congé" />
-                </Form.Item>
-                
-                <Form.Item
-                  name="annulable"
-                  label="Permettre à l'employé d'annuler cette demande après approbation"
-                >
-                  <Radio.Group>
-                    <Radio value={true}>Oui</Radio>
-                    <Radio value={false}>Non</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                
-                <div className="validation-actions">
-                  <Space>
-                    <Button 
-                      onClick={() => handleValidate('rejected')} 
-                      icon={<CloseCircleOutlined />} 
-                      danger
-                      loading={loading && validationStatus === 'rejected'}
-                    >
-                      Rejeter
-                    </Button>
-                    <Button 
-                      type="primary" 
-                      onClick={() => handleValidate('approved')} 
-                      icon={<CheckCircleOutlined />}
-                      loading={loading && validationStatus === 'approved'}
-                    >
-                      Approuver
-                    </Button>
-                  </Space>
+            {(conge.status !== 'pending' || conge.manager_validation) && (
+              <div>
+                <Divider orientation="left">Décision de validation</Divider>
+                <div style={{ display: 'flex', marginBottom: '8px' }}>
+                  <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Statut:</Text>
+                  <Text>
+                    {conge.status === 'approved' ? 'Approuvée' : 
+                     conge.status === 'rejected' ? 'Rejetée' : 'En attente'}
+                  </Text>
                 </div>
-              </Form>
-            </div>
-          )}
-
-          {(conge.status !== 'pending' || conge.manager_validation) && (
-            <div className="validation-info">
-              <Title level={5}>Informations de validation</Title>
-              <div className="info-item">
-                <Text strong>Statut:</Text>
-                {getStatusTag(conge.status)}
+                
+                {conge.manager_validation && (
+                  <>
+                    <div style={{ display: 'flex', marginBottom: '8px' }}>
+                      <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Décision manager:</Text>
+                      <Text>
+                        {conge.manager_validation.is_approved ? 'Approuvée' : 'Rejetée'}
+                      </Text>
+                    </div>
+                    
+                    {!conge.manager_validation.is_approved && conge.manager_validation.justifier && (
+                      <div style={{ display: 'flex', marginBottom: '8px' }}>
+                        <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Justification:</Text>
+                        <Text>{conge.manager_validation.justifier || 'Aucune justification fournie'}</Text>
+                      </div>
+                    )}
+                  </>
+                )}
+                
+                {conge.hr_validation && (
+                  <>
+                    <div style={{ display: 'flex', marginBottom: '8px' }}>
+                      <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Décision RH:</Text>
+                      <Text>
+                        {conge.hr_validation.is_approved ? 'Approuvée' : 'Rejetée'}
+                      </Text>
+                    </div>
+                    
+                    {!conge.hr_validation.is_approved && conge.hr_validation.justifier && (
+                      <div style={{ display: 'flex', marginBottom: '8px' }}>
+                        <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Justification RH:</Text>
+                        <Text>{conge.hr_validation.justifier || 'Aucune justification fournie'}</Text>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
-              
-              {conge.manager_validation && (
-                <>
-                  {!conge.manager_validation.is_approved && conge.manager_validation.justifier && (
-                    <div className="info-item">
-                      <Text strong>Justification du rejet:</Text>
-                      <Text>{conge.manager_validation.justifier}</Text>
-                    </div>
-                  )}
-                  <div className="info-item">
-                    <Text strong>Décision manager:</Text>
-                    {conge.manager_validation.is_approved ? (
-                      <Tag color="success">Approuvée</Tag>
-                    ) : (
-                      <Tag color="error">Rejetée</Tag>
-                    )}
-                  </div>
-                </>
-              )}
-              
-              {conge.hr_validation && (
-                <>
-                  <div className="info-item">
-                    <Text strong>Décision RH:</Text>
-                    {conge.hr_validation.is_approved ? (
-                      <Tag color="success">Approuvée</Tag>
-                    ) : (
-                      <Tag color="error">Rejetée</Tag>
-                    )}
-                  </div>
-                  {!conge.hr_validation.is_approved && conge.hr_validation.justifier && (
-                    <div className="info-item">
-                      <Text strong>Justification RH:</Text>
-                      <Text>{conge.hr_validation.justifier}</Text>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
-          
-          <div style={{ marginTop: '20px', textAlign: 'right' }}>
-            <Button onClick={onClose}>
-              Fermer
-            </Button>
+            )}
           </div>
         </div>
       )}

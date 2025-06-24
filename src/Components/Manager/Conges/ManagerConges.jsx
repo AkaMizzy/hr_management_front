@@ -144,6 +144,11 @@ const ManagerConges = () => {
       render: (_, record) => `${record.employe_prenom} ${record.employe_nom}`,
     },
     {
+      title: 'Type',
+      dataIndex: 'type_intitule',
+      key: 'type_intitule',
+    },
+    {
       title: 'Période',
       key: 'periode',
       render: (_, record) => (
@@ -193,6 +198,11 @@ const ManagerConges = () => {
       title: 'Employé',
       key: 'employee',
       render: (_, record) => `${record.employe_prenom} ${record.employe_nom}`,
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type_intitule',
+      key: 'type_intitule',
     },
     {
       title: 'Période',
@@ -286,7 +296,7 @@ const ManagerConges = () => {
           >
             <div className="conge-details">
               <div className="conge-header">
-                <Title level={4}>Demande de congé</Title>
+                <Title level={4}>Demande de congé - {selectedConge.type_intitule}</Title>
                 {getStatusTag(selectedConge.status, selectedConge.manager_validation, selectedConge.hr_validation)}
               </div>
               
@@ -294,6 +304,11 @@ const ManagerConges = () => {
                 <div className="info-item">
                   <Text strong>Employé:</Text>
                   <Text>{selectedConge.employe_prenom} {selectedConge.employe_nom}</Text>
+                </div>
+                
+                <div className="info-item">
+                  <Text strong>Type:</Text>
+                  <Text>{selectedConge.type_intitule}</Text>
                 </div>
                 
                 <div className="info-item">
@@ -375,6 +390,8 @@ const ManagerConges = () => {
             <div>
               <div className="validation-info">
                 <Text>Demande de: <strong>{selectedConge.employe_prenom} {selectedConge.employe_nom}</strong></Text>
+                <br />
+                <Text>Type: <strong>{selectedConge.type_intitule}</strong></Text>
                 <br />
                 <Text>Période: <strong>{formatDate(selectedConge.date_debut)} - {formatDate(selectedConge.date_fin)}</strong></Text>
                 <br />

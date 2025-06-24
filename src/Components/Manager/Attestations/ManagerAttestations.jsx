@@ -11,7 +11,8 @@ import {
   Tag,
   Typography,
   Space,
-  Tabs
+  Tabs,
+  Divider
 } from 'antd';
 import {
   FileTextOutlined,
@@ -128,8 +129,8 @@ const ManagerAttestations = () => {
     },
     {
       title: 'Titre',
-      dataIndex: 'intitule',
-      key: 'intitule',
+      dataIndex: 'type_intitule',
+      key: 'type_intitule',
     },
     {
       title: 'Date de demande',
@@ -177,8 +178,8 @@ const ManagerAttestations = () => {
     },
     {
       title: 'Titre',
-      dataIndex: 'intitule',
-      key: 'intitule',
+      dataIndex: 'type_intitule',
+      key: 'type_intitule',
     },
     {
       title: 'Date de demande',
@@ -262,70 +263,62 @@ const ManagerAttestations = () => {
             ]}
             width={700}
           >
-            <div className="attestation-details">
-              <div className="attestation-header">
-                <Title level={4}>{selectedAttestation.intitule}</Title>
+            <div style={{ padding: '0 8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <Title level={4}>Demande d'attestation - {selectedAttestation.employe_prenom} {selectedAttestation.employe_nom}</Title>
                 {getStatusTag(selectedAttestation.status)}
               </div>
               
-              <div className="attestation-info">
-                <div className="info-item">
-                  <Text strong>Employé:</Text>
-                  <Text>{selectedAttestation.employe_prenom} {selectedAttestation.employe_nom}</Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Date de demande:</Text>
-                  <Text>{new Date(selectedAttestation.date_demande).toLocaleDateString('fr-FR')}</Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Description:</Text>
-                  <Paragraph>{selectedAttestation.description}</Paragraph>
-                </div>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Titre:</Text>
+                <Text>{selectedAttestation.type_intitule}</Text>
               </div>
               
-              <div className="validation-section">
-                <Title level={5}>Validation</Title>
-                
-                <div className="validation-step">
-                  <div className="step-header">
-                    <Text strong>Validation Manager</Text>
-                    <Space>
-                      {selectedAttestation.manager_validation ? (
-                        selectedAttestation.manager_validation.is_approved ? (
-                          <Tag color="success">Approuvée</Tag>
-                        ) : (
-                          <Tag color="error">Rejetée</Tag>
-                        )
-                      ) : (
-                        <Tag color="processing">En attente</Tag>
-                      )}
-                    </Space>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date de demande:</Text>
+                <Text>{new Date(selectedAttestation.date_demande).toLocaleDateString('fr-FR')}</Text>
+              </div>
+              
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Description:</Text>
+                <Text>{selectedAttestation.description}</Text>
+              </div>
+
+              <div style={{ marginTop: '24px' }}>
+                {(!selectedAttestation.manager_validation && 
+                  <div style={{ textAlign: 'center', marginTop: '24px' }}>
+                    <Button 
+                      type="primary"
+                      onClick={() => {
+                        setDetailsModalVisible(false);
+                        showValidationModal(selectedAttestation);
+                      }}
+                    >
+                      Valider cette demande
+                    </Button>
                   </div>
-                  
-                  {selectedAttestation.manager_validation && !selectedAttestation.manager_validation.is_approved && (
-                    <div className="justification">
-                      <Text type="secondary">Justification: </Text>
-                      <Text>{selectedAttestation.manager_validation.justification}</Text>
+                )}
+                {(selectedAttestation.manager_validation && 
+                  <div>
+                    <Divider orientation="left">Décision de validation</Divider>
+                    <div style={{ display: 'flex', marginBottom: '8px' }}>
+                      <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Statut:</Text>
+                      <Text>
+                        {selectedAttestation.manager_validation.is_approved 
+                          ? 'Approuvée' 
+                          : 'Rejetée'
+                        }
+                      </Text>
                     </div>
-                  )}
-                </div>
+                    {!selectedAttestation.manager_validation.is_approved && (
+                      <div style={{ display: 'flex', marginBottom: '8px' }}>
+                        <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Justification:</Text>
+                        <Text>{selectedAttestation.manager_validation.justification || 'Aucune justification fournie'}</Text>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-              
-              {!selectedAttestation.manager_validation && (
-                <div className="validation-actions">
-                  <Button 
-                    type="primary" 
-                    onClick={() => {
-                      setDetailsModalVisible(false);
-                      showValidationModal(selectedAttestation);
-                    }}
-                  >
-                    Valider cette demande
-                  </Button>
-                </div>
-              )}
             </div>
           </Modal>
         )}
@@ -344,7 +337,7 @@ const ManagerAttestations = () => {
               <div className="validation-info">
                 <Text>Demande de: <strong>{selectedAttestation.employe_prenom} {selectedAttestation.employe_nom}</strong></Text>
                 <br />
-                <Text>Titre: <strong>{selectedAttestation.intitule}</strong></Text>
+                <Text>Titre: <strong>{selectedAttestation.type_intitule}</strong></Text>
               </div>
               
               <Form

@@ -20,9 +20,11 @@ import EmployeeCalendar from './Components/employee_dashboard/calendar/EmployeeC
 import EmployeeAttestations from './Components/employee_dashboard/attestations/EmployeeAttestations';
 import EmployeeAbsences from './Components/employee_dashboard/absences/EmployeeAbsences';
 import EmployeeConges from './Components/employee_dashboard/conges/EmployeeConges';
+import EmployeeNoteFrais from './Components/employee_dashboard/note_frais/EmployeeNoteFrais';
 import ManagerAttestations from './Components/Manager/Attestations/ManagerAttestations';
 import ManagerAbsences from './Components/Manager/Absences/ManagerAbsences';
 import ManagerConges from './Components/Manager/Conges/ManagerConges';
+import ManagerNoteFrais from './Components/Manager/NoteFrais/ManagerNoteFrais';
 
 // Import RH Dashboard components
 import RHDashboard from './Components/rh_dashboard/RHDashboard';
@@ -31,6 +33,7 @@ import UserManagement from './Components/rh_dashboard/users/UserManagement';
 import RHAttestations from './Components/rh_dashboard/attestations/RHAttestations';
 import RHAbsences from './Components/rh_dashboard/absences/RHAbsences';
 import RHConges from './Components/rh_dashboard/conges/RHConges';
+import RHNoteFrais from './Components/rh_dashboard/note_frais/RHNoteFrais';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -85,6 +88,7 @@ function App() {
           <Route path="attestations" element={<ManagerAttestations />} />
           <Route path="absences" element={<ManagerAbsences />} />
           <Route path="conges" element={<ManagerConges />} />
+          <Route path="note-frais" element={<ManagerNoteFrais />} />
         </Route>
 
         {/* Employee Routes */}
@@ -104,6 +108,7 @@ function App() {
           <Route path="attestations" element={<EmployeeAttestations />} />
           <Route path="absences" element={<EmployeeAbsences />} />
           <Route path="conges" element={<EmployeeConges />} />
+          <Route path="note-frais" element={<EmployeeNoteFrais />} />
           <Route path="notifications" element={<div>Notifications</div>} />
         </Route>
 
@@ -118,6 +123,7 @@ function App() {
           <Route path="attestations" element={<RHAttestations />} />
           <Route path="absences" element={<RHAbsences />} />
           <Route path="conges" element={<RHConges />} />
+          <Route path="note-frais" element={<RHNoteFrais />} />
           <Route index element={<Navigate to="home" replace />} />
         </Route>
 

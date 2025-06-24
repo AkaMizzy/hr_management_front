@@ -12,6 +12,7 @@ import {
   Typography,
   Space,
   Tabs,
+  Divider,
 } from 'antd';
 import {
   FileTextOutlined,
@@ -285,105 +286,100 @@ const RHAbsences = () => {
             ]}
             width={700}
           >
-            <div className="absence-details">
-              <div className="absence-header">
-                <Title level={4}>Demande d'absence</Title>
+            <div style={{ padding: '0 8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <Title level={4}>Demande d'absence - {selectedAbsence.employe_prenom} {selectedAbsence.employe_nom}</Title>
                 {getStatusTag(selectedAbsence.status)}
               </div>
               
-              <div className="absence-info">
-                <div className="info-item">
-                  <Text strong>Employé:</Text>
-                  <Text>{selectedAbsence.employe_prenom} {selectedAbsence.employe_nom}</Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Date d'absence:</Text>
-                  <Text>{formatDate(selectedAbsence.date)}</Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Horaires:</Text>
-                  <Text>
-                    {selectedAbsence.heure_debut 
-                      ? `${selectedAbsence.heure_debut.substring(0, 5)} - ${selectedAbsence.heure_fin.substring(0, 5)}`
-                      : 'Journée complète'}
-                  </Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Motif:</Text>
-                  <Paragraph>{selectedAbsence.motif}</Paragraph>
-                </div>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date d'absence:</Text>
+                <Text>{formatDate(selectedAbsence.date)}</Text>
               </div>
               
-              <div className="validation-section">
-                <Title level={5}>Processus de validation</Title>
-                
-                <div className="validation-step">
-                  <div className="step-header">
-                    <Text strong>Validation Manager</Text>
-                    <Space>
-                      {selectedAbsence.manager_validation ? (
-                        selectedAbsence.manager_validation.is_approved ? (
-                          <Tag color="success">Approuvée</Tag>
-                        ) : (
-                          <Tag color="error">Rejetée</Tag>
-                        )
-                      ) : (
-                        <Tag color="processing">En attente</Tag>
-                      )}
-                    </Space>
-                  </div>
-                  
-                  {selectedAbsence.manager_validation && !selectedAbsence.manager_validation.is_approved && (
-                    <div className="justification">
-                      <Text type="secondary">Justification: </Text>
-                      <Text>{selectedAbsence.manager_validation.justifier}</Text>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="validation-step">
-                  <div className="step-header">
-                    <Text strong>Validation RH</Text>
-                    <Space>
-                      {selectedAbsence.hr_validation ? (
-                        selectedAbsence.hr_validation.is_approved ? (
-                          <Tag color="success">Approuvée</Tag>
-                        ) : (
-                          <Tag color="error">Rejetée</Tag>
-                        )
-                      ) : (
-                        <Tag color="processing">En attente</Tag>
-                      )}
-                    </Space>
-                  </div>
-                  
-                  {selectedAbsence.hr_validation && !selectedAbsence.hr_validation.is_approved && (
-                    <div className="justification">
-                      <Text type="secondary">Justification: </Text>
-                      <Text>{selectedAbsence.hr_validation.justifier}</Text>
-                    </div>
-                  )}
-                </div>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Horaires:</Text>
+                <Text>
+                  {selectedAbsence.heure_debut 
+                    ? `${selectedAbsence.heure_debut.substring(0, 5)} - ${selectedAbsence.heure_fin.substring(0, 5)}`
+                    : 'Journée complète'}
+                </Text>
               </div>
               
-              {selectedAbsence.manager_validation && 
-               selectedAbsence.manager_validation.is_approved && 
-               !selectedAbsence.hr_validation && (
-                <div className="validation-actions">
-                  <Button 
-                    type="primary" 
-                    onClick={() => {
-                      setDetailsModalVisible(false);
-                      showValidationModal(selectedAbsence);
-                    }}
-                  >
-                    Valider cette demande
-                  </Button>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Motif:</Text>
+                <Text>{selectedAbsence.motif}</Text>
+              </div>
+              
+              <div style={{ marginTop: '24px' }}>
+                <Divider orientation="left">Processus de validation</Divider>
+                
+                <div className="validation-steps">
+                  <div className="validation-step">
+                    <div className="step-header">
+                      <Text strong>Validation Manager</Text>
+                      <Space>
+                        {selectedAbsence.manager_validation ? (
+                          selectedAbsence.manager_validation.is_approved ? (
+                            <Tag color="success">Approuvée</Tag>
+                          ) : (
+                            <Tag color="error">Rejetée</Tag>
+                          )
+                        ) : (
+                          <Tag color="processing">En attente</Tag>
+                        )}
+                      </Space>
+                    </div>
+                    
+                    {selectedAbsence.manager_validation && !selectedAbsence.manager_validation.is_approved && (
+                      <div className="justification">
+                        <Text type="secondary">Justification: </Text>
+                        <Text>{selectedAbsence.manager_validation.justifier || 'Aucune justification fournie'}</Text>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="validation-step">
+                    <div className="step-header">
+                      <Text strong>Validation RH</Text>
+                      <Space>
+                        {selectedAbsence.hr_validation ? (
+                          selectedAbsence.hr_validation.is_approved ? (
+                            <Tag color="success">Approuvée</Tag>
+                          ) : (
+                            <Tag color="error">Rejetée</Tag>
+                          )
+                        ) : (
+                          <Tag color="processing">En attente</Tag>
+                        )}
+                      </Space>
+                    </div>
+                    
+                    {selectedAbsence.hr_validation && !selectedAbsence.hr_validation.is_approved && (
+                      <div className="justification">
+                        <Text type="secondary">Justification: </Text>
+                        <Text>{selectedAbsence.hr_validation.justifier || 'Aucune justification fournie'}</Text>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
+                
+                {selectedAbsence.manager_validation && 
+                 selectedAbsence.manager_validation.is_approved && 
+                 !selectedAbsence.hr_validation && (
+                  <div className="validation-actions" style={{ textAlign: 'center', justifyContent: 'center' }}>
+                    <Button 
+                      type="primary" 
+                      onClick={() => {
+                        setDetailsModalVisible(false);
+                        showValidationModal(selectedAbsence);
+                      }}
+                    >
+                      Valider cette demande
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </Modal>
         )}

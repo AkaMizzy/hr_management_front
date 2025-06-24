@@ -7,7 +7,8 @@ import {
   CheckSquareOutlined,
   FormOutlined,
   ClockCircleOutlined,
-  CarryOutOutlined 
+  CarryOutOutlined,
+  DollarOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../../Assets/images/pic1.jpeg';
@@ -53,6 +54,11 @@ const EmployeeSidebar = ({ collapsed, onCollapse }) => {
       key: '/employee-dashboard/conges',
       icon: <CarryOutOutlined  />,
       label: 'Congés'
+    },
+    {
+      key: '/employee-dashboard/note-frais',
+      icon: <DollarOutlined />,
+      label: 'Notes de frais'
     },
   ];
 

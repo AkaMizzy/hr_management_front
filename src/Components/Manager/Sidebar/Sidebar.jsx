@@ -8,7 +8,8 @@ import {
     DashboardOutlined,
     CheckSquareOutlined,
     FormOutlined,
-    CarryOutOutlined 
+    CarryOutOutlined,
+    DollarOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Sidebar.css';
@@ -62,6 +63,11 @@ const Sidebar = ({ collapsed, onCollapse }) => {
             key: 'conges',
             icon: <CarryOutOutlined  />,
             label: 'Gestion des congés',
+        },
+        {
+            key: 'note-frais',
+            icon: <DollarOutlined />,
+            label: 'Gestion des notes de frais',
         },
     ];
 

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form, Input, DatePicker, Select, message, Typography, Space, Divider, Tag, Radio } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import moment from 'moment';
 
 const { Title, Text } = Typography;
-const { TextArea } = Form;
+const { TextArea } = Input;
 const { Option } = Select;
 
 const AbsenceDetails = ({ visible, absence, onClose, onValidate, refreshData }) => {
@@ -43,11 +43,11 @@ const AbsenceDetails = ({ visible, absence, onClose, onValidate, refreshData }) 
   const getStatusTag = (status) => {
     switch (status) {
       case 'pending':
-        return <Tag color="orange">Pending</Tag>;
+        return <Tag icon={<ClockCircleOutlined />} color="processing">En attente</Tag>;
       case 'approved':
-        return <Tag color="green">Approved</Tag>;
+        return <Tag icon={<CheckCircleOutlined />} color="success">Approuvée</Tag>;
       case 'rejected':
-        return <Tag color="red">Rejected</Tag>;
+        return <Tag icon={<CloseCircleOutlined />} color="error">Refusée</Tag>;
       default:
         return <Tag color="default">{status}</Tag>;
     }
@@ -55,8 +55,8 @@ const AbsenceDetails = ({ visible, absence, onClose, onValidate, refreshData }) 
 
   const getAnnulableTag = (annulable) => {
     return annulable ? 
-      <Tag color="green">Annulable</Tag> : 
-      <Tag color="red">Non-annulable</Tag>;
+      <Tag color="success">Annulable</Tag> : 
+      <Tag color="error">Non-annulable</Tag>;
   };
 
   const formatDate = (dateString) => {
@@ -65,114 +65,135 @@ const AbsenceDetails = ({ visible, absence, onClose, onValidate, refreshData }) 
 
   return (
     <Modal
-      title="Absence Request Details"
+      title="Détails de la demande d'absence"
       open={visible}
       onCancel={onClose}
       width={700}
-      footer={null}
+      footer={[
+        <Button key="close" onClick={onClose}>
+          Fermer
+        </Button>
+      ]}
     >
       {absence && (
-        <div className="absence-details">
-          <div className="absence-header">
-            <Title level={4}>Absence Request #{absence.id}</Title>
+        <div style={{ padding: '0 8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <Title level={4}>Demande d'absence - {absence.employee?.firstName} {absence.employee?.lastName}</Title>
             {getStatusTag(absence.status)}
           </div>
           
-          <div className="absence-info">
-            <div className="info-item">
-              <strong>Employee:</strong> {absence.employee?.firstName} {absence.employee?.lastName}
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Département:</Text>
+            <Text>{absence.employee?.department}</Text>
+          </div>
+          
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Type:</Text>
+            <Text>{absence.type}</Text>
+          </div>
+          
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date de début:</Text>
+            <Text>{formatDate(absence.startDate)}</Text>
+          </div>
+          
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date de fin:</Text>
+            <Text>{formatDate(absence.endDate)}</Text>
+          </div>
+          
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Durée:</Text>
+            <Text>{absence.duration} jours</Text>
+          </div>
+          
+          {absence.reason && (
+            <div style={{ display: 'flex', marginBottom: '8px' }}>
+              <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Motif:</Text>
+              <Text>{absence.reason}</Text>
             </div>
-            <div className="info-item">
-              <strong>Department:</strong> {absence.employee?.department}
+          )}
+          
+          <div style={{ display: 'flex', marginBottom: '8px' }}>
+            <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Soumise le:</Text>
+            <Text>{formatDate(absence.createdAt)}</Text>
+          </div>
+          
+          {absence.status !== 'pending' && absence.annulable !== undefined && (
+            <div style={{ display: 'flex', marginBottom: '8px' }}>
+              <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Annulable:</Text>
+              <Text>{absence.annulable ? 'Oui' : 'Non'}</Text>
             </div>
-            <div className="info-item">
-              <strong>Type:</strong> {absence.type}
-            </div>
-            <div className="info-item">
-              <strong>Start Date:</strong> {formatDate(absence.startDate)}
-            </div>
-            <div className="info-item">
-              <strong>End Date:</strong> {formatDate(absence.endDate)}
-            </div>
-            <div className="info-item">
-              <strong>Duration:</strong> {absence.duration} days
-            </div>
-            {absence.reason && (
-              <div className="info-item">
-                <strong>Reason:</strong> {absence.reason}
+          )}
+
+          <div style={{ marginTop: '24px' }}>
+            {absence.status === 'pending' && (
+              <div>
+                <Divider orientation="left">Validation</Divider>
+                <Form form={form} layout="vertical" initialValues={{ annulable: false }}>
+                  <Form.Item
+                    name="managerComment"
+                    label="Commentaires"
+                  >
+                    <TextArea rows={4} placeholder="Ajoutez vos commentaires concernant cette demande d'absence" />
+                  </Form.Item>
+                  
+                  <Form.Item
+                    name="annulable"
+                    label="Permettre à l'employé d'annuler cette demande après approbation"
+                  >
+                    <Radio.Group>
+                      <Radio value={true}>Oui</Radio>
+                      <Radio value={false}>Non</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                  
+                  <div style={{ textAlign: 'center', marginTop: '24px' }}>
+                    <Space>
+                      <Button 
+                        onClick={() => handleValidate('rejected')} 
+                        icon={<CloseCircleOutlined />} 
+                        danger
+                        loading={loading && validationStatus === 'rejected'}
+                      >
+                        Rejeter
+                      </Button>
+                      <Button 
+                        type="primary" 
+                        onClick={() => handleValidate('approved')} 
+                        icon={<CheckCircleOutlined />}
+                        loading={loading && validationStatus === 'approved'}
+                      >
+                        Approuver
+                      </Button>
+                    </Space>
+                  </div>
+                </Form>
               </div>
             )}
-            <div className="info-item">
-              <strong>Submitted on:</strong> {formatDate(absence.createdAt)}
-            </div>
-            {absence.status !== 'pending' && absence.annulable !== undefined && (
-              <div className="info-item">
-                <strong>Annulable:</strong> {getAnnulableTag(absence.annulable)}
+
+            {absence.status !== 'pending' && (
+              <div>
+                <Divider orientation="left">Décision de validation</Divider>
+                <div style={{ display: 'flex', marginBottom: '8px' }}>
+                  <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Statut:</Text>
+                  <Text>{absence.status === 'approved' ? 'Approuvée' : 'Refusée'}</Text>
+                </div>
+                
+                <div style={{ display: 'flex', marginBottom: '8px' }}>
+                  <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Validée le:</Text>
+                  <Text>{formatDate(absence.updatedAt)}</Text>
+                </div>
+                
+                {absence.managerComment && (
+                  <div style={{ display: 'flex', marginBottom: '8px' }}>
+                    <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Commentaires:</Text>
+                    <Text>{absence.managerComment}</Text>
+                  </div>
+                )}
               </div>
             )}
           </div>
-
-          {absence.status === 'pending' && (
-            <div className="validation-section">
-              <Title level={5}>Validation</Title>
-              <Form form={form} layout="vertical" initialValues={{ annulable: false }}>
-                <Form.Item
-                  name="managerComment"
-                  label="Comments"
-                >
-                  <TextArea rows={4} placeholder="Add your comments about this absence request" />
-                </Form.Item>
-                
-                <Form.Item
-                  name="annulable"
-                  label="Allow employee to cancel this request after approval"
-                  valuePropName="checked"
-                >
-                  <Radio.Group>
-                    <Radio value={true}>Yes</Radio>
-                    <Radio value={false}>No</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                
-                <div className="validation-actions">
-                  <Space>
-                    <Button 
-                      onClick={() => handleValidate('rejected')} 
-                      icon={<CloseCircleOutlined />} 
-                      danger
-                      loading={loading && validationStatus === 'rejected'}
-                    >
-                      Reject
-                    </Button>
-                    <Button 
-                      type="primary" 
-                      onClick={() => handleValidate('approved')} 
-                      icon={<CheckCircleOutlined />}
-                      loading={loading && validationStatus === 'approved'}
-                    >
-                      Approve
-                    </Button>
-                  </Space>
-                </div>
-              </Form>
-            </div>
-          )}
-
-          {absence.status !== 'pending' && (
-            <div className="validation-info">
-              <div className="info-item">
-                <strong>Status:</strong> {getStatusTag(absence.status)}
-              </div>
-              <div className="info-item">
-                <strong>Validated on:</strong> {formatDate(absence.updatedAt)}
-              </div>
-              {absence.managerComment && (
-                <div className="info-item">
-                  <strong>Manager Comments:</strong> {absence.managerComment}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
     </Modal>

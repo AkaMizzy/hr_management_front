@@ -11,7 +11,9 @@ import {
   Tag, 
   Space, 
   Tooltip,
-  InputNumber
+  InputNumber,
+  Divider,
+  Select
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -20,7 +22,8 @@ import {
   CheckCircleOutlined, 
   CloseCircleOutlined,
   DeleteOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import moment from 'moment';
@@ -31,13 +34,36 @@ import './EmployeeConges.css';
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 moment.locale('fr');
+
+// Custom animated pending icon component
+const AnimatedPendingIcon = () => {
+  const iconStyle = {
+    animation: 'rotate 1.5s linear infinite',
+    display: 'inline-block'
+  };
+
+  return <ClockCircleOutlined style={iconStyle} />;
+};
+
+// Custom animated pending icon component for RH validation
+const AnimatedProcessingIcon = () => {
+  const iconStyle = {
+    animation: 'rotate 1.5s linear infinite',
+    display: 'inline-block'
+  };
+
+  return <LoadingOutlined style={iconStyle} />;
+};
 
 const EmployeeConges = () => {
   const [form] = Form.useForm();
   const [conges, setConges] = useState([]);
+  const [congeTypes, setCongeTypes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [typesLoading, setTypesLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [formModalVisible, setFormModalVisible] = useState(false);
@@ -53,8 +79,25 @@ const EmployeeConges = () => {
   useEffect(() => {
     if (employeeId) {
       fetchConges();
+      fetchCongeTypes();
     }
   }, [employeeId]);
+
+  // Add CSS for the animation to the component
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = `
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
 
   const fetchConges = async () => {
     setLoading(true);
@@ -68,6 +111,21 @@ const EmployeeConges = () => {
       toast.error('Erreur lors du chargement des demandes de congé');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCongeTypes = async () => {
+    setTypesLoading(true);
+    try {
+      const response = await axios.get('http://localhost:5000/api/conges/types/all', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setCongeTypes(response.data);
+    } catch (error) {
+      console.error('Error fetching leave types:', error);
+      toast.error('Erreur lors du chargement des types de congé');
+    } finally {
+      setTypesLoading(false);
     }
   };
 
@@ -87,6 +145,7 @@ const EmployeeConges = () => {
         date_debut: startDate,
         date_fin: endDate,
         nombre_jours: nombreJours,
+        type_id: values.type_id,
         id_employe: employeeId
       };
 
@@ -161,9 +220,9 @@ const EmployeeConges = () => {
     } else if (status === 'approved') {
       return <Tag icon={<CheckCircleOutlined />} color="success">Approuvée</Tag>;
     } else if (managerValidation && managerValidation.is_approved === true) {
-      return <Tag icon={<ClockCircleOutlined />} color="processing">En attente RH</Tag>;
+      return <Tag icon={<AnimatedProcessingIcon />} color="processing">En attente RH</Tag>;
     } else {
-      return <Tag icon={<ClockCircleOutlined />} color="warning">En attente</Tag>;
+      return <Tag icon={<AnimatedPendingIcon />} color="warning">En attente</Tag>;
     }
   };
 
@@ -204,6 +263,11 @@ const EmployeeConges = () => {
   };
 
   const columns = [
+    {
+      title: 'Type',
+      dataIndex: 'type_intitule',
+      key: 'type_intitule'
+    },
     {
       title: 'Période',
       key: 'periode',
@@ -301,6 +365,21 @@ const EmployeeConges = () => {
             layout="vertical"
           >
             <Form.Item
+              name="type_id"
+              label="Type de congé"
+              rules={[{ required: true, message: 'Veuillez sélectionner un type de congé' }]}
+            >
+              <Select 
+                placeholder="Sélectionnez le type de congé" 
+                loading={typesLoading}
+              >
+                {congeTypes.map(type => (
+                  <Option key={type.id} value={type.id}>{type.intitule}</Option>
+                ))}
+              </Select>
+            </Form.Item>
+            
+            <Form.Item
               name="dateRange"
               label="Période de congé"
               rules={[{ required: true, message: 'Veuillez sélectionner la période de congé' }]}
@@ -374,28 +453,26 @@ const EmployeeConges = () => {
             ]}
             width={700}
           >
-            <div className="conge-details">
-              <div className="conge-header">
-                <Title level={4}>Demande de congé</Title>
+            <div style={{ padding: '0 8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <Title level={4}>Demande de congé - {selectedConge.type_intitule}</Title>
                 {getStatusTag(selectedConge.status, selectedConge.manager_validation, selectedConge.hr_validation)}
               </div>
               
-              <div className="conge-info">
-                <div className="info-item">
-                  <Text strong>Période:</Text>
-                  <Text>
-                    {moment(selectedConge.date_debut).format('DD/MM/YYYY')} - {moment(selectedConge.date_fin).format('DD/MM/YYYY')}
-                  </Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Nombre de jours:</Text>
-                  <Text>{selectedConge.nombre_jours}</Text>
-                </div>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Période:</Text>
+                <Text>
+                  {moment(selectedConge.date_debut).format('DD/MM/YYYY')} - {moment(selectedConge.date_fin).format('DD/MM/YYYY')}
+                </Text>
               </div>
               
-              <div className="validation-section">
-                <Title level={5}>Processus de validation</Title>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Nombre de jours:</Text>
+                <Text>{selectedConge.nombre_jours}</Text>
+              </div>
+              
+              <div style={{ marginTop: '24px' }}>
+                <Divider orientation="left">Processus de validation</Divider>
                 
                 <div className="validation-steps">
                   <div className="validation-step">
@@ -409,7 +486,7 @@ const EmployeeConges = () => {
                             <Tag color="error">Rejetée</Tag>
                           )
                         ) : (
-                          <Tag color="processing">En attente</Tag>
+                          <Tag icon={<AnimatedPendingIcon />} color="default">En attente</Tag>
                         )}
                       </Space>
                     </div>
@@ -447,7 +524,7 @@ const EmployeeConges = () => {
                           selectedConge.manager_validation && !selectedConge.manager_validation.is_approved ? (
                             <Tag color="default">Non concerné</Tag>
                           ) : (
-                            <Tag color="processing">En attente</Tag>
+                            <Tag icon={<AnimatedPendingIcon />} color="default">En attente</Tag>
                           )
                         )}
                       </Space>

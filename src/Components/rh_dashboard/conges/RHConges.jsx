@@ -11,7 +11,8 @@ import {
   Tag,
   Typography,
   Space,
-  Tabs
+  Tabs,
+  Divider
 } from 'antd';
 import {
   FileTextOutlined,
@@ -119,6 +120,11 @@ const RHConges = () => {
       render: (_, record) => `${record.employe_prenom} ${record.employe_nom}`,
     },
     {
+      title: 'Type',
+      dataIndex: 'type_intitule',
+      key: 'type_intitule',
+    },
+    {
       title: 'Période',
       key: 'periode',
       render: (_, record) => (
@@ -144,8 +150,9 @@ const RHConges = () => {
     {
       title: 'Actions',
       key: 'actions',
+      width: 250,
       render: (_, record) => (
-        <Space>
+        <div style={{ display: 'flex', gap: '12px' }}>
           <Button
             type="text"
             icon={<FileTextOutlined />}
@@ -161,7 +168,7 @@ const RHConges = () => {
               Valider
             </Button>
           )}
-        </Space>
+        </div>
       ),
     },
   ];
@@ -171,6 +178,11 @@ const RHConges = () => {
       title: 'Employé',
       key: 'employee',
       render: (_, record) => `${record.employe_prenom} ${record.employe_nom}`,
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type_intitule',
+      key: 'type_intitule',
     },
     {
       title: 'Période',
@@ -194,14 +206,17 @@ const RHConges = () => {
     {
       title: 'Actions',
       key: 'actions',
+      width: 150,
       render: (_, record) => (
-        <Button
-          type="text"
-          icon={<FileTextOutlined />}
-          onClick={() => showDetails(record)}
-        >
-          Détails
-        </Button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Button
+            type="text"
+            icon={<FileTextOutlined />}
+            onClick={() => showDetails(record)}
+          >
+            Détails
+          </Button>
+        </div>
       ),
     },
   ];
@@ -268,105 +283,105 @@ const RHConges = () => {
             ]}
             width={700}
           >
-            <div className="conge-details">
-              <div className="conge-header">
-                <Title level={4}>Demande de congé</Title>
+            <div style={{ padding: '0 8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <Title level={4}>Demande de congé - {selectedConge.employe_prenom} {selectedConge.employe_nom}</Title>
                 {getStatusTag(selectedConge.status, selectedConge.manager_validation, selectedConge.hr_validation)}
               </div>
               
-              <div className="conge-info">
-                <div className="info-item">
-                  <Text strong>Employé:</Text>
-                  <Text>{selectedConge.employe_prenom} {selectedConge.employe_nom}</Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Période:</Text>
-                  <Text>
-                    {formatDate(selectedConge.date_debut)} - {formatDate(selectedConge.date_fin)}
-                  </Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Nombre de jours:</Text>
-                  <Text>{selectedConge.nombre_jours}</Text>
-                </div>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Type de congé:</Text>
+                <Text>{selectedConge.type_intitule}</Text>
+              </div>
+              
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Période:</Text>
+                <Text>
+                  {formatDate(selectedConge.date_debut)} - {formatDate(selectedConge.date_fin)}
+                </Text>
+              </div>
+              
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Nombre de jours:</Text>
+                <Text>{selectedConge.nombre_jours}</Text>
+              </div>
 
-                {selectedConge.manager_validation && selectedConge.manager_validation.annulable !== undefined && (
-                  <div className="info-item">
-                    <Text strong>Annulable:</Text>
-                    <Text>{selectedConge.manager_validation.annulable ? 'Oui' : 'Non'}</Text>
+              {selectedConge.manager_validation && selectedConge.manager_validation.annulable !== undefined && (
+                <div style={{ display: 'flex', marginBottom: '8px' }}>
+                  <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Annulable:</Text>
+                  <Text>{selectedConge.manager_validation.annulable ? 'Oui' : 'Non'}</Text>
+                </div>
+              )}
+              
+              <div style={{ marginTop: '24px' }}>
+                <Divider orientation="left">Processus de validation</Divider>
+                
+                <div className="validation-steps">
+                  <div className="validation-step">
+                    <div className="step-header">
+                      <Text strong>Validation Manager</Text>
+                      <Space>
+                        {selectedConge.manager_validation ? (
+                          selectedConge.manager_validation.is_approved ? (
+                            <Tag color="success">Approuvée</Tag>
+                          ) : (
+                            <Tag color="error">Rejetée</Tag>
+                          )
+                        ) : (
+                          <Tag color="processing">En attente</Tag>
+                        )}
+                      </Space>
+                    </div>
+                    
+                    {selectedConge.manager_validation && !selectedConge.manager_validation.is_approved && (
+                      <div className="justification">
+                        <Text type="secondary">Justification: </Text>
+                        <Text>{selectedConge.manager_validation.justifier || 'Aucune justification fournie'}</Text>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="validation-step">
+                    <div className="step-header">
+                      <Text strong>Validation RH</Text>
+                      <Space>
+                        {selectedConge.hr_validation ? (
+                          selectedConge.hr_validation.is_approved ? (
+                            <Tag color="success">Approuvée</Tag>
+                          ) : (
+                            <Tag color="error">Rejetée</Tag>
+                          )
+                        ) : (
+                          <Tag color="processing">En attente</Tag>
+                        )}
+                      </Space>
+                    </div>
+                    
+                    {selectedConge.hr_validation && !selectedConge.hr_validation.is_approved && (
+                      <div className="justification">
+                        <Text type="secondary">Justification: </Text>
+                        <Text>{selectedConge.hr_validation.justifier || 'Aucune justification fournie'}</Text>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {selectedConge.manager_validation && 
+                 selectedConge.manager_validation.is_approved && 
+                 !selectedConge.hr_validation && (
+                  <div className="validation-actions" style={{ textAlign: 'center', justifyContent: 'center' }}>
+                    <Button 
+                      type="primary" 
+                      onClick={() => {
+                        setDetailsModalVisible(false);
+                        showValidationModal(selectedConge);
+                      }}
+                    >
+                      Valider cette demande
+                    </Button>
                   </div>
                 )}
               </div>
-              
-              <div className="validation-section">
-                <Title level={5}>Validation</Title>
-                
-                <div className="validation-step">
-                  <div className="step-header">
-                    <Text strong>Validation Manager</Text>
-                    <Space>
-                      {selectedConge.manager_validation ? (
-                        selectedConge.manager_validation.is_approved ? (
-                          <Tag color="success">Approuvée</Tag>
-                        ) : (
-                          <Tag color="error">Rejetée</Tag>
-                        )
-                      ) : (
-                        <Tag color="processing">En attente</Tag>
-                      )}
-                    </Space>
-                  </div>
-                  
-                  {selectedConge.manager_validation && !selectedConge.manager_validation.is_approved && (
-                    <div className="justification">
-                      <Text type="secondary">Justification: </Text>
-                      <Text>{selectedConge.manager_validation.justifier}</Text>
-                    </div>
-                  )}
-                </div>
-                
-                <div className="validation-step">
-                  <div className="step-header">
-                    <Text strong>Validation RH</Text>
-                    <Space>
-                      {selectedConge.hr_validation ? (
-                        selectedConge.hr_validation.is_approved ? (
-                          <Tag color="success">Approuvée</Tag>
-                        ) : (
-                          <Tag color="error">Rejetée</Tag>
-                        )
-                      ) : (
-                        <Tag color="processing">En attente</Tag>
-                      )}
-                    </Space>
-                  </div>
-                  
-                  {selectedConge.hr_validation && !selectedConge.hr_validation.is_approved && (
-                    <div className="justification">
-                      <Text type="secondary">Justification: </Text>
-                      <Text>{selectedConge.hr_validation.justifier}</Text>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {selectedConge.manager_validation && 
-               selectedConge.manager_validation.is_approved && 
-               !selectedConge.hr_validation && (
-                <div className="validation-actions">
-                  <Button 
-                    type="primary" 
-                    onClick={() => {
-                      setDetailsModalVisible(false);
-                      showValidationModal(selectedConge);
-                    }}
-                  >
-                    Valider cette demande
-                  </Button>
-                </div>
-              )}
             </div>
           </Modal>
         )}
@@ -384,6 +399,8 @@ const RHConges = () => {
             <div>
               <div className="validation-info">
                 <Text>Demande de: <strong>{selectedConge.employe_prenom} {selectedConge.employe_nom}</strong></Text>
+                <br />
+                <Text>Type: <strong>{selectedConge.type_intitule}</strong></Text>
                 <br />
                 <Text>Période: <strong>{formatDate(selectedConge.date_debut)} - {formatDate(selectedConge.date_fin)}</strong></Text>
                 <br />

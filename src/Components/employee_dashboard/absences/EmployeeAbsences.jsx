@@ -13,7 +13,8 @@ import {
   TimePicker,
   Row,
   Col,
-  Tooltip
+  Tooltip,
+  
 } from 'antd';
 import { 
   PlusOutlined, 
@@ -21,7 +22,8 @@ import {
   CheckCircleOutlined, 
   CloseCircleOutlined,
   DeleteOutlined,
-  FileTextOutlined
+  FileTextOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import moment from 'moment';
@@ -33,6 +35,26 @@ const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 moment.locale('fr');
+
+// Custom animated pending icon component
+const AnimatedPendingIcon = () => {
+  const iconStyle = {
+    animation: 'rotate 1.5s linear infinite',
+    display: 'inline-block'
+  };
+
+  return <ClockCircleOutlined style={iconStyle} />;
+};
+
+// Custom animated pending icon component for RH validation
+const AnimatedProcessingIcon = () => {
+  const iconStyle = {
+    animation: 'rotate 1.5s linear infinite',
+    display: 'inline-block'
+  };
+
+  return <LoadingOutlined style={iconStyle} />;
+};
 
 const EmployeeAbsences = () => {
   const [form] = Form.useForm();
@@ -54,6 +76,22 @@ const EmployeeAbsences = () => {
       fetchAbsences();
     }
   }, [employeeId]);
+
+  // Add CSS for the animation to the component
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = `
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
 
   const fetchAbsences = async () => {
     setLoading(true);
@@ -155,9 +193,9 @@ const EmployeeAbsences = () => {
     } else if (status === 'approved') {
       return <Tag icon={<CheckCircleOutlined />} color="success">Approuvée</Tag>;
     } else if (managerValidation && managerValidation.is_approved === true) {
-      return <Tag icon={<ClockCircleOutlined />} color="processing">En attente RH</Tag>;
+      return <Tag icon={<AnimatedProcessingIcon />} color="processing">En attente RH</Tag>;
     } else {
-      return <Tag icon={<ClockCircleOutlined />} color="warning">En attente</Tag>;
+      return <Tag icon={<AnimatedPendingIcon />} color="warning">En attente</Tag>;
     }
   };
 
@@ -388,35 +426,33 @@ const EmployeeAbsences = () => {
             ]}
             width={700}
           >
-            <div className="absence-details">
-              <div className="absence-header">
+            <div style={{ padding: '0 8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <Title level={4}>Demande d'absence</Title>
                 {getStatusTag(selectedAbsence.status, selectedAbsence.manager_validation, selectedAbsence.hr_validation)}
               </div>
               
-              <div className="absence-info">
-                <div className="info-item">
-                  <Text strong>Date d'absence:</Text>
-                  <Text>{moment(selectedAbsence.date).format('DD/MM/YYYY')}</Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Horaires:</Text>
-                  <Text>
-                    {selectedAbsence.heure_debut 
-                      ? `${selectedAbsence.heure_debut.substring(0, 5)} - ${selectedAbsence.heure_fin.substring(0, 5)}`
-                      : 'Journée complète'}
-                  </Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Motif:</Text>
-                  <Text>{selectedAbsence.motif}</Text>
-                </div>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date d'absence:</Text>
+                <Text>{moment(selectedAbsence.date).format('DD/MM/YYYY')}</Text>
               </div>
               
-              <div className="validation-section">
-                <Title level={5}>Processus de validation</Title>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Horaires:</Text>
+                <Text>
+                  {selectedAbsence.heure_debut 
+                    ? `${selectedAbsence.heure_debut.substring(0, 5)} - ${selectedAbsence.heure_fin.substring(0, 5)}`
+                    : 'Journée complète'}
+                </Text>
+              </div>
+              
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Motif:</Text>
+                <Text>{selectedAbsence.motif}</Text>
+              </div>
+              
+              <div style={{ marginTop: '24px' }}>
+                <Divider orientation="left">Processus de validation</Divider>
                 
                 <div className="validation-steps">
                   {/* Manager Validation */}
@@ -430,7 +466,7 @@ const EmployeeAbsences = () => {
                           <Tag icon={<CloseCircleOutlined />} color="error">Refusé</Tag>
                         )
                       ) : (
-                        <Tag icon={<ClockCircleOutlined />} color="warning">En attente</Tag>
+                        <Tag icon={<AnimatedPendingIcon />} color="default">En attente</Tag>
                       )}
                     </div>
                     
@@ -438,6 +474,17 @@ const EmployeeAbsences = () => {
                       <div className="justification">
                         <Text type="secondary">Justification: </Text>
                         <Text>{selectedAbsence.manager_validation.justifier || 'Aucune justification fournie'}</Text>
+                      </div>
+                    )}
+                    
+                    {selectedAbsence.manager_validation && selectedAbsence.manager_validation.is_approved && (
+                      <div className="annulable-status">
+                        <Text type="secondary">Annulable: </Text>
+                        {selectedAbsence.manager_validation.annulable ? (
+                          <Tag color="success">Oui</Tag>
+                        ) : (
+                          <Tag color="error">Non</Tag>
+                        )}
                       </div>
                     )}
                   </div>
@@ -453,7 +500,7 @@ const EmployeeAbsences = () => {
                           <Tag icon={<CloseCircleOutlined />} color="error">Refusé</Tag>
                         )
                       ) : (
-                        <Tag icon={<ClockCircleOutlined />} color="default">En attente</Tag>
+                        <Tag icon={<AnimatedPendingIcon />} color="default">En attente</Tag>
                       )}
                     </div>
                     

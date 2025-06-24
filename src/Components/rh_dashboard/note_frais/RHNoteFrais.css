@@ -1,0 +1,93 @@
+.rh-note-frais-container {
+  padding: 0;
+}
+
+.note-frais-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.note-frais-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.note-frais-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #f9f9f9;
+  padding: 16px;
+  border-radius: 6px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.validation-section {
+  margin-top: 24px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+}
+
+.validation-step {
+  margin-top: 12px;
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.justification {
+  margin-top: 8px;
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 4px;
+  border-left: 3px solid #d9d9d9;
+}
+
+.validation-actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.validation-info {
+  margin-bottom: 24px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+
+/* Tab styles */
+.ant-tabs-tab {
+  padding: 12px 16px !important;
+}
+
+.ant-tabs-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Table styles */
+.ant-table-wrapper {
+  margin-top: 16px;
+}
+
+/* Make sure the table fits within the card */
+.ant-card-body {
+  overflow-x: auto;
+} 

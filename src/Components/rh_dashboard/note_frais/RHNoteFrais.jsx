@@ -12,55 +12,62 @@ import {
   Typography,
   Space,
   Tabs,
-  Divider,
+  Divider
 } from 'antd';
 import {
   FileTextOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
   ClockCircleOutlined,
-  FilePdfOutlined,
+  ExclamationCircleOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
-import { API_BASE_URL } from '../../../api/constants';
-import './RHAttestations.css';
+import moment from 'moment';
+import 'moment/locale/fr';
+import { toast } from 'react-hot-toast';
+import './RHNoteFrais.css';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
 const { TabPane } = Tabs;
+const { confirm } = Modal;
 
-const RHAttestations = () => {
-  const [attestations, setAttestations] = useState([]);
+moment.locale('fr');
+
+const RHNoteFrais = () => {
+  const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [validationModalVisible, setValidationModalVisible] = useState(false);
-  const [selectedAttestation, setSelectedAttestation] = useState(null);
+  const [selectedExpense, setSelectedExpense] = useState(null);
   const [form] = Form.useForm();
 
   useEffect(() => {
-    fetchAttestations();
+    fetchExpenseRequests();
   }, []);
 
-  const fetchAttestations = async () => {
+  const fetchExpenseRequests = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/attestations/hr`);
-      setAttestations(response.data);
+      const response = await axios.get('http://localhost:5000/api/note-frais/hr', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
+      setExpenses(response.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching attestations:', error);
-      message.error('Erreur lors du chargement des demandes d\'attestation');
+      console.error('Error fetching expenses:', error);
+      toast.error('Erreur lors du chargement des notes de frais');
       setLoading(false);
     }
   };
 
-  const showDetails = (attestation) => {
-    setSelectedAttestation(attestation);
+  const showDetails = (expense) => {
+    setSelectedExpense(expense);
     setDetailsModalVisible(true);
   };
 
-  const showValidationModal = (attestation) => {
-    setSelectedAttestation(attestation);
+  const showValidationModal = (expense) => {
+    setSelectedExpense(expense);
     form.resetFields();
     setValidationModalVisible(true);
   };
@@ -72,62 +79,42 @@ const RHAttestations = () => {
       
       // If rejecting, justification is required
       if (!isApproved && !values.justification) {
-        message.error('Une justification est requise en cas de rejet');
+        toast.error('Une justification est requise en cas de rejet');
         return;
       }
       
-      await axios.post(`${API_BASE_URL}/attestations/${selectedAttestation.id}/validate/hr`, {
-        is_approved: isApproved,
-        justification: values.justification
-      });
+      await axios.post(
+        `http://localhost:5000/api/note-frais/${selectedExpense.id}/validate/hr`,
+        {
+          is_approved: isApproved,
+          justification: values.justification
+        },
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      );
       
-      message.success(`Demande d'attestation ${isApproved ? 'approuvée' : 'rejetée'} avec succès`);
+      toast.success(`Note de frais ${isApproved ? 'approuvée' : 'rejetée'} avec succès`);
       setValidationModalVisible(false);
-      fetchAttestations();
+      fetchExpenseRequests();
     } catch (error) {
-      console.error('Error validating attestation request:', error);
-      message.error('Erreur lors de la validation de la demande');
+      console.error('Error validating expense request:', error);
+      toast.error('Erreur lors de la validation de la demande');
     }
   };
 
-  const generateAttestation = async (attestationId) => {
-    try {
-      message.loading('Génération de l\'attestation en cours...', 1.5);
-      
-      // This would be implemented to call an API endpoint that generates the attestation
-      // await axios.post(`${API_BASE_URL}/attestations/${attestationId}/generate`);
-      
-      // For now, just show a success message
-      setTimeout(() => {
-        message.success('Attestation générée avec succès');
-      }, 1500);
-    } catch (error) {
-      console.error('Error generating attestation:', error);
-      message.error('Erreur lors de la génération de l\'attestation');
-    }
-  };
-
-  const getStatusTag = (status) => {
-    // Convert to lowercase for case-insensitive comparison
-    const statusLower = typeof status === 'string' ? status.toLowerCase() : '';
-    
-    switch (statusLower) {
-      case 'approved':
+  const getStatusTag = (status, hrValidation) => {
+    if (hrValidation) {
+      if (hrValidation.is_approved) {
         return <Tag icon={<CheckCircleOutlined />} color="success">Approuvée</Tag>;
-      case 'rejected':
-        return <Tag icon={<CloseCircleOutlined />} color="error">Rejetée</Tag>;
-      case 'pending':
-      default:
-        return <Tag icon={<ClockCircleOutlined />} color="processing">En attente</Tag>;
+      } else {
+        return <Tag icon={<CloseCircleOutlined />} color="error">Refusée</Tag>;
+      }
     }
+    return <Tag icon={<ClockCircleOutlined />} color="processing">En attente</Tag>;
   };
 
-  const getHRValidationStatus = (attestation) => {
-    if (!attestation.hr_validation) return null;
-    
-    return attestation.hr_validation.is_approved ? 
-      <Tag icon={<CheckCircleOutlined />} color="success">Approuvée</Tag> :
-      <Tag icon={<CloseCircleOutlined />} color="error">Rejetée</Tag>;
+  // Helper function to format amount as currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MAD' }).format(amount);
   };
 
   const pendingColumns = [
@@ -137,21 +124,30 @@ const RHAttestations = () => {
       render: (_, record) => `${record.employe_prenom} ${record.employe_nom}`,
     },
     {
-      title: 'Titre',
-      dataIndex: 'type_intitule',
-      key: 'type_intitule',
+      title: 'Date',
+      dataIndex: 'date_frais',
+      key: 'date_frais',
+      render: (date) => moment(date).format('DD/MM/YYYY')
     },
     {
-      title: 'Date de demande',
-      dataIndex: 'date_demande',
-      key: 'date_demande',
-      render: (date) => new Date(date).toLocaleDateString('fr-FR'),
+      title: 'Type',
+      dataIndex: 'type_nom',
+      key: 'type_nom'
     },
     {
-      title: 'Statut',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status) => getStatusTag(status),
+      title: 'Montant',
+      dataIndex: 'montant',
+      key: 'montant',
+      render: (montant) => formatCurrency(montant)
+    },
+    {
+      title: 'Validation Manager',
+      key: 'manager_validation',
+      render: (_, record) => (
+        record.manager_validation && record.manager_validation.is_approved ? 
+          <Tag icon={<CheckCircleOutlined />} color="success">Approuvée</Tag> :
+          <Tag icon={<ClockCircleOutlined />} color="warning">En attente</Tag>
+      )
     },
     {
       title: 'Actions',
@@ -166,7 +162,9 @@ const RHAttestations = () => {
           >
             Détails
           </Button>
-          {!record.rh_validation && (
+          {record.manager_validation && 
+           record.manager_validation.is_approved && 
+           !record.hr_validation && (
             <Button
               type="primary"
               onClick={() => showValidationModal(record)}
@@ -186,99 +184,99 @@ const RHAttestations = () => {
       render: (_, record) => `${record.employe_prenom} ${record.employe_nom}`,
     },
     {
-      title: 'Titre',
-      dataIndex: 'type_intitule',
-      key: 'type_intitule',
+      title: 'Date',
+      dataIndex: 'date_frais',
+      key: 'date_frais',
+      render: (date) => moment(date).format('DD/MM/YYYY')
     },
     {
-      title: 'Date de demande',
-      dataIndex: 'date_demande',
-      key: 'date_demande',
-      render: (date) => new Date(date).toLocaleDateString('fr-FR'),
+      title: 'Type',
+      dataIndex: 'type_nom',
+      key: 'type_nom'
+    },
+    {
+      title: 'Montant',
+      dataIndex: 'montant',
+      key: 'montant',
+      render: (montant) => formatCurrency(montant)
     },
     {
       title: 'Décision',
       key: 'decision',
-      render: (_, record) => getHRValidationStatus(record),
+      render: (_, record) => (
+        record.hr_validation && record.hr_validation.is_approved ? 
+          <Tag icon={<CheckCircleOutlined />} color="success">Approuvée</Tag> :
+          <Tag icon={<CloseCircleOutlined />} color="error">Refusée</Tag>
+      )
     },
     {
       title: 'Actions',
       key: 'actions',
-      width: 250,
       render: (_, record) => (
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <Button
-            type="text"
-            icon={<FileTextOutlined />}
-            onClick={() => showDetails(record)}
-          >
-            Détails
-          </Button>
-          {record.rh_validation && !record.is_generated && (
-            <Button
-              type="primary"
-              onClick={() => generateAttestation(record)}
-            >
-              Générer
-            </Button>
-          )}
-        </div>
+        <Button
+          type="text"
+          icon={<FileTextOutlined />}
+          onClick={() => showDetails(record)}
+        >
+          Détails
+        </Button>
       ),
     },
   ];
 
-  const pendingAttestations = attestations.filter(a => 
-    a.manager_validation && 
-    a.manager_validation.is_approved && 
-    !a.hr_validation
+  const pendingExpenses = expenses.filter(e => 
+    e.manager_validation && 
+    e.manager_validation.is_approved && 
+    !e.hr_validation
   );
-  
-  const processedAttestations = attestations.filter(a => a.hr_validation);
+  const processedExpenses = expenses.filter(e => e.hr_validation);
 
   return (
-    <div className="rh-attestations-container">
+    <div className="rh-note-frais-container">
       <Card>
-        <Title level={4}>Validation des demandes d'attestation</Title>
+        <Title level={4}>Notes de frais</Title>
         
         <Tabs defaultActiveKey="pending">
           <TabPane 
             tab={
               <span>
-                En attente <Tag color="processing">{pendingAttestations.length}</Tag>
+                En attente <Tag color="processing">{pendingExpenses.length}</Tag>
               </span>
             } 
             key="pending"
           >
             <Table
-              dataSource={pendingAttestations}
+              dataSource={pendingExpenses}
               columns={pendingColumns}
               rowKey="id"
               loading={loading}
               pagination={{ pageSize: 10 }}
+              locale={{ emptyText: 'Aucune note de frais en attente' }}
             />
           </TabPane>
           <TabPane 
             tab={
               <span>
-                Traitées <Tag color="default">{processedAttestations.length}</Tag>
+                Traitées <Tag color="default">{processedExpenses.length}</Tag>
               </span>
             } 
             key="processed"
           >
             <Table
-              dataSource={processedAttestations}
+              dataSource={processedExpenses}
               columns={processedColumns}
               rowKey="id"
               loading={loading}
               pagination={{ pageSize: 10 }}
+              locale={{ emptyText: 'Aucune note de frais traitée' }}
             />
           </TabPane>
         </Tabs>
 
-        {/* Attestation Details Modal */}
-        {selectedAttestation && (
+        {/* Expense Details Modal */}
+        {selectedExpense && (
           <Modal
-            title="Détails de la demande d'attestation"
+            title="Détails de la note de frais"
             open={detailsModalVisible}
             onCancel={() => setDetailsModalVisible(false)}
             footer={[
@@ -290,20 +288,32 @@ const RHAttestations = () => {
           >
             <div style={{ padding: '0 8px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <Title level={4}>{selectedAttestation.type_intitule} - {selectedAttestation.employe_prenom} {selectedAttestation.employe_nom}</Title>
-                {getStatusTag(selectedAttestation.status)}
+                <Title level={4}>Note de frais - {selectedExpense.employe_prenom} {selectedExpense.employe_nom}</Title>
+                {getStatusTag(selectedExpense.status, selectedExpense.hr_validation)}
               </div>
               
               <div style={{ display: 'flex', marginBottom: '8px' }}>
-                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date de demande:</Text>
-                <Text>{new Date(selectedAttestation.date_demande).toLocaleDateString('fr-FR')}</Text>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date:</Text>
+                <Text>{moment(selectedExpense.date_frais).format('DD/MM/YYYY')}</Text>
               </div>
-              
+                
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Type de dépense:</Text>
+                <Text>{selectedExpense.type_nom}</Text>
+              </div>
+                
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Montant:</Text>
+                <Text style={{ fontWeight: 500, color: '#1890ff' }}>
+                  {formatCurrency(selectedExpense.montant)}
+                </Text>
+              </div>
+                
               <div style={{ display: 'flex', marginBottom: '8px' }}>
                 <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Description:</Text>
-                <Text>{selectedAttestation.description}</Text>
+                <Text>{selectedExpense.description || "Aucune description"}</Text>
               </div>
-              
+
               <div style={{ marginTop: '24px' }}>
                 <Divider orientation="left">Processus de validation</Divider>
                 
@@ -312,8 +322,8 @@ const RHAttestations = () => {
                     <div className="step-header">
                       <Text strong>Validation Manager</Text>
                       <Space>
-                        {selectedAttestation.manager_validation ? (
-                          selectedAttestation.manager_validation.is_approved ? (
+                        {selectedExpense.manager_validation ? (
+                          selectedExpense.manager_validation.is_approved ? (
                             <Tag color="success">Approuvée</Tag>
                           ) : (
                             <Tag color="error">Rejetée</Tag>
@@ -324,10 +334,10 @@ const RHAttestations = () => {
                       </Space>
                     </div>
                     
-                    {selectedAttestation.manager_validation && !selectedAttestation.manager_validation.is_approved && (
+                    {selectedExpense.manager_validation && !selectedExpense.manager_validation.is_approved && (
                       <div className="justification">
                         <Text type="secondary">Justification: </Text>
-                        <Text>{selectedAttestation.manager_validation.justification || 'Aucune justification fournie'}</Text>
+                        <Text>{selectedExpense.manager_validation.justification || 'Aucune justification fournie'}</Text>
                       </div>
                     )}
                   </div>
@@ -336,8 +346,8 @@ const RHAttestations = () => {
                     <div className="step-header">
                       <Text strong>Validation RH</Text>
                       <Space>
-                        {selectedAttestation.hr_validation ? (
-                          selectedAttestation.hr_validation.is_approved ? (
+                        {selectedExpense.hr_validation ? (
+                          selectedExpense.hr_validation.is_approved ? (
                             <Tag color="success">Approuvée</Tag>
                           ) : (
                             <Tag color="error">Rejetée</Tag>
@@ -348,40 +358,27 @@ const RHAttestations = () => {
                       </Space>
                     </div>
                     
-                    {selectedAttestation.hr_validation && !selectedAttestation.hr_validation.is_approved && (
+                    {selectedExpense.hr_validation && !selectedExpense.hr_validation.is_approved && (
                       <div className="justification">
                         <Text type="secondary">Justification: </Text>
-                        <Text>{selectedAttestation.hr_validation.justification || 'Aucune justification fournie'}</Text>
+                        <Text>{selectedExpense.hr_validation.justification || 'Aucune justification fournie'}</Text>
                       </div>
                     )}
                   </div>
                 </div>
                 
-                {selectedAttestation.manager_validation && 
-                 selectedAttestation.manager_validation.is_approved && 
-                 !selectedAttestation.hr_validation && (
+                {selectedExpense.manager_validation && 
+                 selectedExpense.manager_validation.is_approved && 
+                 !selectedExpense.hr_validation && (
                   <div className="validation-actions" style={{ textAlign: 'center', justifyContent: 'center' }}>
                     <Button 
-                      type="primary" 
+                      type="primary"
                       onClick={() => {
                         setDetailsModalVisible(false);
-                        showValidationModal(selectedAttestation);
+                        showValidationModal(selectedExpense);
                       }}
                     >
                       Valider cette demande
-                    </Button>
-                  </div>
-                )}
-                
-                {selectedAttestation.hr_validation && 
-                 selectedAttestation.hr_validation.is_approved && (
-                  <div className="validation-actions" style={{ textAlign: 'center', justifyContent: 'center' }}>
-                    <Button 
-                      type="primary" 
-                      icon={<FilePdfOutlined />}
-                      onClick={() => generateAttestation(selectedAttestation.id)}
-                    >
-                      Générer l'attestation
                     </Button>
                   </div>
                 )}
@@ -392,19 +389,21 @@ const RHAttestations = () => {
 
         {/* Validation Modal */}
         <Modal
-          title="Validation de la demande d'attestation"
+          title="Validation de la note de frais"
           open={validationModalVisible}
           onCancel={() => setValidationModalVisible(false)}
           onOk={handleValidate}
           okText="Soumettre"
           cancelText="Annuler"
         >
-          {selectedAttestation && (
+          {selectedExpense && (
             <div>
               <div className="validation-info">
-                <Text>Demande de: <strong>{selectedAttestation.employe_prenom} {selectedAttestation.employe_nom}</strong></Text>
+                <Text>Employé: <strong>{selectedExpense.employe_prenom} {selectedExpense.employe_nom}</strong></Text>
                 <br />
-                <Text>Titre: <strong>{selectedAttestation.type_intitule}</strong></Text>
+                <Text>Montant: <strong>{formatCurrency(selectedExpense.montant)}</strong></Text>
+                <br />
+                <Text>Type: <strong>{selectedExpense.type_nom}</strong></Text>
               </div>
               
               <Form
@@ -451,4 +450,4 @@ const RHAttestations = () => {
   );
 };
 
-export default RHAttestations; 
+export default RHNoteFrais; 

@@ -10,7 +10,9 @@ import {
   Tag,
   Typography,
   Space,
-  Tooltip
+  Tooltip,
+  Divider,
+  Select
 } from 'antd';
 import {
   PlusOutlined,
@@ -18,7 +20,8 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   ClockCircleOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../api/constants';
@@ -26,10 +29,33 @@ import './EmployeeAttestations.css';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
+const { Option } = Select;
+
+// Custom animated pending icon component
+const AnimatedPendingIcon = () => {
+  const iconStyle = {
+    animation: 'rotate 1.5s linear infinite',
+    display: 'inline-block'
+  };
+
+  return <ClockCircleOutlined style={iconStyle} />;
+};
+
+// Custom animated pending icon component for RH validation
+const AnimatedProcessingIcon = () => {
+  const iconStyle = {
+    animation: 'rotate 1.5s linear infinite',
+    display: 'inline-block'
+  };
+
+  return <LoadingOutlined style={iconStyle} />;
+};
 
 const EmployeeAttestations = () => {
   const [attestations, setAttestations] = useState([]);
+  const [attestationTypes, setAttestationTypes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [typesLoading, setTypesLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedAttestation, setSelectedAttestation] = useState(null);
@@ -42,8 +68,25 @@ const EmployeeAttestations = () => {
   useEffect(() => {
     if (employeeId) {
       fetchAttestations();
+      fetchAttestationTypes();
     }
   }, [employeeId]);
+
+  // Add CSS for the animation to the component
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.innerHTML = `
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(styleElement);
+
+    return () => {
+      document.head.removeChild(styleElement);
+    };
+  }, []);
 
   const fetchAttestations = async () => {
     try {
@@ -69,6 +112,19 @@ const EmployeeAttestations = () => {
     }
   };
 
+  const fetchAttestationTypes = async () => {
+    try {
+      setTypesLoading(true);
+      const response = await axios.get(`${API_BASE_URL}/attestations/types/all`);
+      setAttestationTypes(response.data);
+      setTypesLoading(false);
+    } catch (error) {
+      console.error('Error fetching attestation types:', error);
+      message.error('Erreur lors du chargement des types d\'attestation');
+      setTypesLoading(false);
+    }
+  };
+
   const handleCreateAttestation = () => {
     form.resetFields();
     setIsModalVisible(true);
@@ -79,7 +135,8 @@ const EmployeeAttestations = () => {
       const values = await form.validateFields();
       
       await axios.post(`${API_BASE_URL}/attestations`, {
-        ...values,
+        type_id: values.type_id,
+        description: values.description,
         employe_id: employeeId
       });
       
@@ -108,15 +165,15 @@ const EmployeeAttestations = () => {
         return <Tag icon={<CloseCircleOutlined />} color="error">Rejetée</Tag>;
       case 'pending':
       default:
-        return <Tag icon={<ClockCircleOutlined />} color="processing">En attente</Tag>;
+        return <Tag icon={<AnimatedPendingIcon />} color="warning">En attente</Tag>;
     }
   };
 
   const columns = [
     {
       title: 'Titre',
-      dataIndex: 'intitule',
-      key: 'intitule',
+      dataIndex: 'type_intitule',
+      key: 'type_intitule',
     },
     {
       title: 'Date de demande',
@@ -187,11 +244,18 @@ const EmployeeAttestations = () => {
             layout="vertical"
           >
             <Form.Item
-              name="intitule"
+              name="type_id"
               label="Titre de l'attestation"
-              rules={[{ required: true, message: 'Veuillez entrer un titre' }]}
+              rules={[{ required: true, message: 'Veuillez sélectionner un type d\'attestation' }]}
             >
-              <Input placeholder="Ex: Attestation de travail" />
+              <Select 
+                placeholder="Sélectionnez le type d'attestation" 
+                loading={typesLoading}
+              >
+                {attestationTypes.map(type => (
+                  <Option key={type.id} value={type.id}>{type.intitule}</Option>
+                ))}
+              </Select>
             </Form.Item>
             
             <Form.Item
@@ -220,26 +284,24 @@ const EmployeeAttestations = () => {
             ]}
             width={700}
           >
-            <div className="attestation-details">
-              <div className="attestation-header">
-                <Title level={4}>{selectedAttestation.intitule}</Title>
+            <div style={{ padding: '0 8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <Title level={4}>{selectedAttestation.type_intitule}</Title>
                 {getStatusTag(selectedAttestation.status)}
               </div>
               
-              <div className="attestation-info">
-                <div className="info-item">
-                  <Text strong>Date de demande:</Text>
-                  <Text>{new Date(selectedAttestation.date_demande).toLocaleDateString('fr-FR')}</Text>
-                </div>
-                
-                <div className="info-item">
-                  <Text strong>Description:</Text>
-                  <Paragraph>{selectedAttestation.description}</Paragraph>
-                </div>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Date de demande:</Text>
+                <Text>{new Date(selectedAttestation.date_demande).toLocaleDateString('fr-FR')}</Text>
               </div>
               
-              <div className="validation-section">
-                <Title level={5}>Processus de validation</Title>
+              <div style={{ display: 'flex', marginBottom: '8px' }}>
+                <Text strong style={{ minWidth: '130px', marginRight: '12px' }}>Description:</Text>
+                <Text>{selectedAttestation.description}</Text>
+              </div>
+              
+              <div style={{ marginTop: '24px' }}>
+                <Divider orientation="left">Processus de validation</Divider>
                 
                 <div className="validation-steps">
                   <div className="validation-step">
@@ -253,7 +315,7 @@ const EmployeeAttestations = () => {
                             <Tag color="error">Rejetée</Tag>
                           )
                         ) : (
-                          <Tag color="processing">En attente</Tag>
+                          <Tag icon={<AnimatedPendingIcon />} color="default">En attente</Tag>
                         )}
                       </Space>
                     </div>
@@ -280,7 +342,7 @@ const EmployeeAttestations = () => {
                           selectedAttestation.manager_validation && !selectedAttestation.manager_validation.is_approved ? (
                             <Tag color="default">Non concerné</Tag>
                           ) : (
-                            <Tag color="processing">En attente</Tag>
+                            <Tag icon={<AnimatedPendingIcon />} color="default">En attente</Tag>
                           )
                         )}
                       </Space>
@@ -304,13 +366,13 @@ const EmployeeAttestations = () => {
               
               {/* Show download button when attestation is approved */}
               {(selectedAttestation.status && selectedAttestation.status.toLowerCase() === 'approved') && (
-                <div className="download-section">
+                <div className="download-section" style={{ marginTop: '24px' }}>
                   <Tooltip title="Cette fonctionnalité sera disponible prochainement">
                     <Button type="primary" icon={<FileTextOutlined />} disabled>
                       Télécharger l'attestation
                     </Button>
                   </Tooltip>
-                  <Text type="secondary">
+                  <Text type="secondary" style={{ display: 'block', marginTop: '8px' }}>
                     <InfoCircleOutlined /> Le téléchargement sera disponible prochainement
                   </Text>
                 </div>
