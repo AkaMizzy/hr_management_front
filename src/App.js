@@ -80,7 +80,7 @@ function App() {
           }
         >
           <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="/dashboard" element={<div>Tableau de bord</div>} />
+          <Route path="/dashboard" element={<div></div>} />
           <Route path="entites" element={<Entity />} />
           <Route path="employes" element={<Employee />} />
           <Route path="taches" element={<TaskList />} />

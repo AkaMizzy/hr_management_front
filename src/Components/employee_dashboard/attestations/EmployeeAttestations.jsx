@@ -21,7 +21,9 @@ import {
   CloseCircleOutlined,
   ClockCircleOutlined,
   InfoCircleOutlined,
-  LoadingOutlined
+  LoadingOutlined,
+  DownloadOutlined,
+  FilePdfOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../api/constants';
@@ -59,6 +61,7 @@ const EmployeeAttestations = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedAttestation, setSelectedAttestation] = useState(null);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [form] = Form.useForm();
 
   // Get employee data from localStorage
@@ -94,14 +97,35 @@ const EmployeeAttestations = () => {
       const response = await axios.get(`${API_BASE_URL}/attestations/employee/${employeeId}`);
       
       // Process the data to ensure status is lowercase for consistent comparison
-      const processedAttestations = response.data.map(attestation => {
+      // and check if PDFs exist for approved attestations
+      const processedAttestations = await Promise.all(response.data.map(async attestation => {
         // Make sure status is lowercase for consistent comparison
         if (attestation.status) {
           attestation.status = attestation.status.toLowerCase();
         }
         
+        // If attestation is approved, check if PDF exists
+        if (attestation.status === 'approved' && 
+            attestation.hr_validation && 
+            attestation.hr_validation.is_approved) {
+          try {
+            const pdfCheckResponse = await axios.get(`${API_BASE_URL}/attestations/${attestation.id}/pdf`, {
+              responseType: 'blob',
+              validateStatus: function (status) {
+                return status < 500; // Resolve only if the status code is less than 500
+              }
+            });
+            
+            attestation.has_pdf = pdfCheckResponse.status === 200;
+          } catch (error) {
+            attestation.has_pdf = false;
+          }
+        } else {
+          attestation.has_pdf = false;
+        }
+        
         return attestation;
-      });
+      }));
       
       setAttestations(processedAttestations);
       setLoading(false);
@@ -154,6 +178,34 @@ const EmployeeAttestations = () => {
     setDetailsModalVisible(true);
   };
 
+  const downloadAttestation = async (attestationId) => {
+    try {
+      setDownloadingPdf(true);
+      message.loading('Téléchargement de l\'attestation...', 1);
+      
+      // Download the PDF
+      const response = await axios.get(`${API_BASE_URL}/attestations/${attestationId}/pdf`, {
+        responseType: 'blob'
+      });
+      
+      // Create a blob URL and trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `attestation_${attestationId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      message.success('Téléchargement réussi');
+    } catch (error) {
+      console.error('Error downloading attestation:', error);
+      message.error('Erreur lors du téléchargement de l\'attestation');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
   const getStatusTag = (status) => {
     // Convert to lowercase for case-insensitive comparison
     const statusLower = typeof status === 'string' ? status.toLowerCase() : '';
@@ -196,14 +248,28 @@ const EmployeeAttestations = () => {
     {
       title: 'Actions',
       key: 'actions',
+      width: 250,
       render: (_, record) => (
-        <Button
-          type="text"
-          icon={<FileTextOutlined />}
-          onClick={() => showDetails(record)}
-        >
-          Détails
-        </Button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <Button
+            type="text"
+            icon={<FileTextOutlined />}
+            onClick={() => showDetails(record)}
+            style={{ padding: '4px 12px', display: 'inline-flex', alignItems: 'center' }}
+          >
+            Détails
+          </Button>
+          {record.status === 'approved' && record.has_pdf && (
+            <Button
+              type="primary"
+              icon={<DownloadOutlined />}
+              onClick={() => downloadAttestation(record.id)}
+              style={{ padding: '4px 12px', display: 'inline-flex', alignItems: 'center' }}
+            >
+              Télécharger
+            </Button>
+          )}
+        </div>
       ),
     },
   ];
@@ -365,16 +431,31 @@ const EmployeeAttestations = () => {
               </div>
               
               {/* Show download button when attestation is approved */}
-              {(selectedAttestation.status && selectedAttestation.status.toLowerCase() === 'approved') && (
-                <div className="download-section" style={{ marginTop: '24px' }}>
-                  <Tooltip title="Cette fonctionnalité sera disponible prochainement">
-                    <Button type="primary" icon={<FileTextOutlined />} disabled>
+              {(selectedAttestation.status === 'approved') && (
+                <div className="download-section" style={{ marginTop: '24px', textAlign: 'center' }}>
+                  {selectedAttestation.has_pdf ? (
+                    <Button 
+                      type="primary" 
+                      icon={<DownloadOutlined />}
+                      onClick={() => downloadAttestation(selectedAttestation.id)}
+                      loading={downloadingPdf}
+                    >
                       Télécharger l'attestation
                     </Button>
-                  </Tooltip>
-                  <Text type="secondary" style={{ display: 'block', marginTop: '8px' }}>
-                    <InfoCircleOutlined /> Le téléchargement sera disponible prochainement
-                  </Text>
+                  ) : (
+                    <div>
+                      <Button 
+                        type="default" 
+                        icon={<FilePdfOutlined />}
+                        disabled
+                      >
+                        Attestation non disponible
+                      </Button>
+                      <Text type="secondary" style={{ display: 'block', marginTop: '8px' }}>
+                        <InfoCircleOutlined /> L'attestation n'a pas encore été générée par le service RH
+                      </Text>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -25,7 +25,9 @@ import {
   TableOutlined,
   ApartmentOutlined,
   PlusCircleOutlined,
-  FileAddOutlined
+  FileAddOutlined,
+  ManOutlined,
+  WomanOutlined
 } from "@ant-design/icons";
 import { toast } from 'react-hot-toast';
 import moment from "moment";
@@ -207,7 +209,15 @@ const Employee = () => {
       title: "Genre",
       dataIndex: "genre",
       key: "genre",
-      render: (genre) => (genre === "homme" ? "Homme" : "Femme"),
+      render: (genre) => (
+        <Tooltip title={genre === "homme" ? "Homme" : "Femme"}>
+          {genre === "homme" ? (
+            <ManOutlined style={{ color: '#1890ff', fontSize: 18 }} />
+          ) : (
+            <WomanOutlined style={{ color: '#eb2f96', fontSize: 18 }} />
+          )}
+        </Tooltip>
+      ),
       filters: [
         { text: "Homme", value: "homme" },
         { text: "Femme", value: "femme" },

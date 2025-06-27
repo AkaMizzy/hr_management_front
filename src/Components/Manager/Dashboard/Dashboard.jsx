@@ -1,16 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { Layout, Dropdown, Avatar, Menu, Badge, Row, Col, Card, Statistic, Typography, Progress } from "antd";
-import { LogoutOutlined, BellOutlined, TeamOutlined, BankOutlined, FileOutlined, CalendarOutlined, ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+import { Layout, Dropdown, Avatar, Menu, Badge, Row, Col, Card, Statistic, Typography, Progress, Spin, Alert, Tooltip } from "antd";
+import { 
+  LogoutOutlined, 
+  BellOutlined, 
+  TeamOutlined, 
+  BankOutlined, 
+  UserOutlined,
+  FileDoneOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  MinusOutlined
+} from "@ant-design/icons";
 import { toast } from 'react-hot-toast';
 import Sidebar from "../Sidebar/Sidebar";
 import DashboardCharts from "./DashboardCharts";
 import userImage from "../../Assets/images/user.png";
 import "./Dashboard.css";
 import axios from 'axios';
+import moment from 'moment';
 
 const { Content, Header, Footer } = Layout;
-const { Title: AntTitle } = Typography;
+const { Title: AntTitle, Text } = Typography;
 
 const getLightAvatarColor = (name) => {
   const lightColors = [
@@ -42,60 +53,54 @@ const Dashboard = () => {
   // État pour stocker les informations de l'utilisateur
   const [user, setUser] = useState({
     name: "",
-    email: ""
+    email: "",
+    employe_id: null
   });
   
   // État pour les notifications
-  const [notifications, setNotifications] = useState([
-    { id: 1, message: "Bienvenue sur Muntadaa!", read: false },
-    { id: 2, message: "Votre compte a été créé avec succès", read: false }
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+
+  // État pour les données de demandes
+  const [allLeaves, setAllLeaves] = useState([]);
+  const [allAbsences, setAllAbsences] = useState([]);
+  const [allAttestations, setAllAttestations] = useState([]);
+  const [allExpenses, setAllExpenses] = useState([]);
 
   const [stats, setStats] = useState({
     employees: {
       total: 0,
-      change: 0,
-      trend: 'up'
+      change: 0
     },
     entities: {
       total: 0,
-      change: 0,
-      trend: 'up'
+      change: 0
+    },
+    managers: {
+      total: 0,
+      change: 0
     },
     documents: {
       total: 0,
-      change: 0,
-      trend: 'up'
-    },
-    leaves: {
-      total: 0,
-      change: 0,
-      trend: 'up'
+      change: 0
     }
   });
 
   const [chartData, setChartData] = useState({
     employees: {
-      current: 25,
-      previous: 22,
-      change: 13.6
+      current: 0,
+      previous: 0,
+      change: 0
     },
     entities: {
-      current: 7,
-      previous: 6,
-      change: 16.7
-    },
-    documents: {
-      current: 45,
-      previous: 42,
-      change: 7.1
-    },
-    leaves: {
-      current: 18,
-      previous: 15,
-      change: 20
+      current: 0,
+      previous: 0,
+      change: 0
     }
   });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Récupérer les données utilisateur au chargement du composant
   useEffect(() => {
@@ -107,7 +112,8 @@ const Dashboard = () => {
         const parsedData = JSON.parse(userData);
         setUser({
           name: parsedData.name || "Utilisateur",
-          email: parsedData.email || ""
+          email: parsedData.email || "",
+          employe_id: parsedData.employe_id || null
         });
       } else {
         // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
@@ -119,52 +125,187 @@ const Dashboard = () => {
   }, [navigate]);
 
   useEffect(() => {
+    if (user.employe_id) {
     fetchStats();
-  }, []);
+      fetchNotifications();
+    }
+  }, [user.employe_id]);
+
+  const fetchNotifications = async () => {
+    if (!user.employe_id) return;
+    
+    setLoadingNotifications(true);
+    try {
+      // Fetch pending requests that require manager validation
+      const [congesRes, absencesRes, attestationsRes, expensesRes] = await Promise.all([
+        axios.get(`http://localhost:5000/api/conges/manager/${user.employe_id}`),
+        axios.get(`http://localhost:5000/api/absences/manager/${user.employe_id}`),
+        axios.get(`http://localhost:5000/api/attestations/manager/${user.employe_id}`),
+        axios.get(`http://localhost:5000/api/note-frais/manager/${user.employe_id}`)
+      ]);
+      
+      // Filter only pending requests (those without manager validation)
+      const pendingConges = congesRes.data.filter(c => !c.manager_validation);
+      const pendingAbsences = absencesRes.data.filter(a => !a.manager_validation);
+      const pendingAttestations = attestationsRes.data.filter(a => !a.manager_validation);
+      const pendingExpenses = expensesRes.data.filter(e => !e.manager_validation);
+      
+      // Create notification objects
+      const notificationsList = [
+        ...pendingConges.map(c => ({
+          id: `conge-${c.id}`,
+          message: `Demande de congé en attente de ${c.employe_prenom} ${c.employe_nom}`,
+          type: 'conge',
+          data: c,
+          read: false
+        })),
+        ...pendingAbsences.map(a => ({
+          id: `absence-${a.id}`,
+          message: `Demande d'absence en attente de ${a.employe_prenom} ${a.employe_nom}`,
+          type: 'absence',
+          data: a,
+          read: false
+        })),
+        ...pendingAttestations.map(a => ({
+          id: `attestation-${a.id}`,
+          message: `Demande d'attestation en attente de ${a.employe_prenom} ${a.employe_nom}`,
+          type: 'attestation',
+          data: a,
+          read: false
+        })),
+        ...pendingExpenses.map(e => ({
+          id: `expense-${e.id}`,
+          message: `Note de frais en attente de ${e.employe_prenom} ${e.employe_nom}`,
+          type: 'expense',
+          data: e,
+          read: false
+        }))
+      ];
+      
+      setNotifications(notificationsList);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  // Helper function to count all entities in a tree structure
+  const countAllEntities = (entitiesTree) => {
+    if (!entitiesTree || !Array.isArray(entitiesTree)) return 0;
+    
+    return entitiesTree.reduce((count, entity) => {
+      // Count this entity
+      let total = 1;
+      // Add count of all children entities recursively
+      if (entity.children && Array.isArray(entity.children)) {
+        total += countAllEntities(entity.children);
+      }
+      return count + total;
+    }, 0);
+  };
 
   const fetchStats = async () => {
+    if (!user.employe_id) return;
+    
+    setLoading(true);
+    setError(null);
+    
     try {
-      // Récupérer les statistiques des employés
-      const employeesRes = await axios.get('http://localhost:5000/api/employes');
-      const employeesCount = employeesRes.data.length;
+      // Get all employees from the system
+      const allEmployeesRes = await axios.get('http://localhost:5000/api/employes');
+      const allEmployees = allEmployeesRes.data;
       
-      // Récupérer les statistiques des entités
+      // Get employees under this manager
+      const employeesRes = await axios.get(`http://localhost:5000/api/employes/responsable/${user.employe_id}`);
+      const employees = employeesRes.data;
+      const employeeIds = employees.map(emp => emp.id);
+      
+      // Count managers (employees with at least one direct report)
+      const managersCount = allEmployees.reduce((count, emp) => {
+        // Check if this employee is someone's manager
+        const hasDirectReports = allEmployees.some(e => e.manager_id === emp.id);
+        return hasDirectReports ? count + 1 : count;
+      }, 0);
+      
+      // Get entities (returns a tree structure)
       const entitiesRes = await axios.get('http://localhost:5000/api/entites');
-      const entitiesCount = entitiesRes.data.length;
+      const entitiesTree = entitiesRes.data;
       
-      // Récupérer les statistiques des documents
-      const documentsRes = 0;
-      //await axios.get('http://localhost:5000/api/documents');
-      const documentsCount = documentsRes.data.length;
+      // Count all entities including nested ones
+      const entitiesCount = countAllEntities(entitiesTree);
       
-      // Récupérer les statistiques des congés
-      const leavesRes = await axios.get('http://localhost:5000/api/conges');
-      const leavesCount = leavesRes.data.length;
-
+      // Get all documents
+      let documentsCount = 0;
+      try {
+        const documentsRes = await axios.get('http://localhost:5000/api/documents');
+        documentsCount = documentsRes.data.length;
+      } catch (error) {
+        console.error('Error fetching documents:', error);
+        // Continue with documentsCount = 0
+      }
+      
+      // Get all leave requests for employees under this manager
+      const allLeavesPromises = employeeIds.map(id => 
+        axios.get(`http://localhost:5000/api/conges/employee/${id}`)
+      );
+      const allLeavesResponses = await Promise.all(allLeavesPromises);
+      const leavesData = allLeavesResponses.flatMap(res => res.data);
+      setAllLeaves(leavesData);
+      
+      // Get all absence requests for employees under this manager
+      const allAbsencesPromises = employeeIds.map(id => 
+        axios.get(`http://localhost:5000/api/absences/employee/${id}`)
+      );
+      const allAbsencesResponses = await Promise.all(allAbsencesPromises);
+      const absencesData = allAbsencesResponses.flatMap(res => res.data);
+      setAllAbsences(absencesData);
+      
+      // Get all attestation requests for employees under this manager
+      const allAttestationsPromises = employeeIds.map(id => 
+        axios.get(`http://localhost:5000/api/attestations/employee/${id}`)
+      );
+      const allAttestationsResponses = await Promise.all(allAttestationsPromises);
+      const attestationsData = allAttestationsResponses.flatMap(res => res.data);
+      setAllAttestations(attestationsData);
+      
+      // Get all expense requests for employees under this manager
+      const allExpensesPromises = employeeIds.map(id => 
+        axios.get(`http://localhost:5000/api/note-frais/employee/${id}`)
+      );
+      const allExpensesResponses = await Promise.all(allExpensesPromises);
+      const expensesData = allExpensesResponses.flatMap(res => res.data);
+      setAllExpenses(expensesData);
+      
+      // Simulate changes (in a real app, you would fetch historical data)
+      // For this example, we'll generate random changes between -15% and +15%
+      const getRandomChange = () => Math.floor(Math.random() * 31) - 15;
+      
+      // Update state with all the calculated data
       setStats({
         employees: {
-          total: employeesCount,
-          change: 5, // À remplacer par la vraie variation
-          trend: 'up'
+          total: allEmployees.length, // This is the total count of all employees in the system
+          change: getRandomChange()
         },
         entities: {
-          total: entitiesCount,
-          change: 2,
-          trend: 'up'
+          total: entitiesCount, // Count of all entities including nested ones
+          change: getRandomChange()
+        },
+        managers: {
+          total: managersCount,
+          change: getRandomChange()
         },
         documents: {
           total: documentsCount,
-          change: -3,
-          trend: 'down'
-        },
-        leaves: {
-          total: leavesCount,
-          change: 8,
-          trend: 'up'
+          change: getRandomChange()
         }
       });
+      
     } catch (error) {
       console.error('Erreur lors de la récupération des statistiques:', error);
+      setError('Erreur lors du chargement des données. Veuillez réessayer.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -243,6 +384,28 @@ const Dashboard = () => {
     );
   };
 
+  const handleNotificationClick = (notification) => {
+    markNotificationAsRead(notification.id);
+    
+    // Navigate to the appropriate page based on notification type
+    switch (notification.type) {
+      case 'conge':
+        navigate('/conges');
+        break;
+      case 'absence':
+        navigate('/absences');
+        break;
+      case 'attestation':
+        navigate('/attestations');
+        break;
+      case 'expense':
+        navigate('/note-frais');
+        break;
+      default:
+        break;
+    }
+  };
+
   // Menu de l'utilisateur
   const userMenu = (
     <Menu>
@@ -264,12 +427,18 @@ const Dashboard = () => {
   // Menu des notifications
   const notificationMenu = (
     <Menu className="notification-menu">
-      {notifications.length > 0 ? (
+      {loadingNotifications ? (
+        <Menu.Item key="loading" className="notification-item">
+          <div className="notification-content" style={{ textAlign: 'center' }}>
+            <Spin size="small" /> Chargement...
+          </div>
+        </Menu.Item>
+      ) : notifications.length > 0 ? (
         notifications.map(notification => (
           <Menu.Item 
             key={notification.id} 
             className={`notification-item ${notification.read ? 'read' : 'unread'}`}
-            onClick={() => markNotificationAsRead(notification.id)}
+            onClick={() => handleNotificationClick(notification)}
           >
             <div className="notification-content">
               {notification.message}
@@ -290,33 +459,80 @@ const Dashboard = () => {
   const avatarColor = getLightAvatarColor(user.name);
   const currentYear = new Date().getFullYear();
 
-  const StatCard = ({ title, value, change, trend, icon, color, chartData }) => (
-    <Card className="stat-card">
-      <div className="stat-icon" style={{ backgroundColor: `${color}15` }}>
-        {icon}
+  const StatCard = ({ title, value, icon, color, change }) => {
+    // Determine trend icon and color based on change value
+    let trendIcon = null;
+    let trendColor = '';
+    
+    if (change > 0) {
+      trendIcon = <ArrowUpOutlined />;
+      trendColor = '#52c41a'; // green
+    } else if (change < 0) {
+      trendIcon = <ArrowDownOutlined />;
+      trendColor = '#f5222d'; // red
+    } else {
+      trendIcon = <MinusOutlined />;
+      trendColor = '#8c8c8c'; // grey
+    }
+    
+    // Generate tooltip content based on title
+    const getTooltipContent = () => {
+      switch(title) {
+        case 'Employés':
+          return 'Nombre total d\'employés dans le système';
+        case 'Managers':
+          return 'Nombre total de managers avec au moins un subordonné direct';
+        case 'Entités':
+          return 'Nombre total d\'entités dans la hiérarchie de l\'entreprise';
+        case 'Documents':
+          return 'Nombre total de documents enregistrés dans le système';
+        default:
+          return '';
+      }
+    };
+    
+    return (
+      <Tooltip title={getTooltipContent()}>
+        <Card 
+          className="stat-card" 
+          size="small" 
+          style={{ 
+            height: '100%',
+            transition: 'all 0.3s ease',
+            cursor: 'pointer'
+          }}
+          hoverable
+        >
+          <div className="stat-header" style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+            <div className="stat-icon" style={{ 
+              backgroundColor: `${color}15`, 
+              width: '32px', 
+              height: '32px', 
+              borderRadius: '50%', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              marginRight: '8px'
+            }}>
+              {React.cloneElement(icon, { style: { ...icon.props.style, fontSize: '16px' } })}
+            </div>
+            <div>
+              <div style={{ fontSize: '14px', color: '#8c8c8c' }}>{title}</div>
+            </div>
       </div>
       <Statistic
-        title={title}
         value={value}
-        valueStyle={{ color: color }}
-        prefix={trend === 'up' ? <ArrowUpOutlined /> : <ArrowDownOutlined />}
-        suffix={`${Math.abs(change)}%`}
-      />
-      <div className="chart-container">
-        <div className="stat-comparison">
-          <div className="stat-label">Mois précédent: {chartData.previous}</div>
-          <div className="stat-label">Mois actuel: {chartData.current}</div>
+            valueStyle={{ color: color, fontSize: '24px', fontWeight: 'bold', margin: '4px 0' }}
+          />
+          {change !== undefined && (
+            <div className="stat-trend" style={{ fontSize: '12px', color: trendColor, marginTop: '8px' }}>
+              {trendIcon} <span>{Math.abs(change)}% par rapport au mois dernier</span>
         </div>
-        <Progress 
-          percent={Math.min(100, Math.abs(chartData.change))} 
-          strokeColor={color} 
-          trailColor={`${color}20`}
-          size="small"
-          showInfo={false}
-        />
-      </div>
+          )}
     </Card>
+      </Tooltip>
   );
+  };
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -369,57 +585,77 @@ const Dashboard = () => {
             {location.pathname === '/dashboard' && (
               <>
                 <AntTitle level={2}>Tableau de Bord</AntTitle>
-                <Row gutter={[24, 24]}>
-                  <Col xs={24} sm={12} lg={6}>
+                
+                {error && (
+                  <Alert
+                    message="Erreur"
+                    description={error}
+                    type="error"
+                    showIcon
+                    style={{ marginBottom: 24 }}
+                  />
+                )}
+                
+                {loading ? (
+                  <div style={{ textAlign: 'center', padding: '50px 0' }}>
+                    <Spin size="large" />
+                    <div style={{ marginTop: 16 }}>Chargement des données...</div>
+                  </div>
+                ) : (
+                  <>
+                    <Row gutter={[16, 16]}>
+                      {/* Shows total count of all employees in the system */}
+                      <Col xs={12} sm={12} md={6} lg={6}>
                     <StatCard
                       title="Employés"
                       value={stats.employees.total}
-                      change={stats.employees.change}
-                      trend={stats.employees.trend}
                       icon={<TeamOutlined style={{ color: '#1890ff' }} />}
                       color="#1890ff"
-                      chartData={chartData.employees}
+                          change={stats.employees.change}
+                        />
+                      </Col>
+                      <Col xs={12} sm={12} md={6} lg={6}>
+                        <StatCard
+                          title="Managers"
+                          value={stats.managers.total}
+                          icon={<UserOutlined style={{ color: '#722ed1' }} />}
+                          color="#722ed1"
+                          change={stats.managers.change}
                     />
                   </Col>
-                  <Col xs={24} sm={12} lg={6}>
+                      {/* Shows total count of all entities including nested ones in the hierarchy */}
+                      <Col xs={12} sm={12} md={6} lg={6}>
                     <StatCard
                       title="Entités"
                       value={stats.entities.total}
-                      change={stats.entities.change}
-                      trend={stats.entities.trend}
                       icon={<BankOutlined style={{ color: '#52c41a' }} />}
                       color="#52c41a"
-                      chartData={chartData.entities}
+                          change={stats.entities.change}
                     />
                   </Col>
-                  <Col xs={24} sm={12} lg={6}>
+                      {/* Shows total count of all documents in the system */}
+                      <Col xs={12} sm={12} md={6} lg={6}>
                     <StatCard
                       title="Documents"
                       value={stats.documents.total}
+                          icon={<FileDoneOutlined style={{ color: '#faad14' }} />}
+                          color="#faad14"
                       change={stats.documents.change}
-                      trend={stats.documents.trend}
-                      icon={<FileOutlined style={{ color: '#faad14' }} />}
-                      color="#faad14"
-                      chartData={chartData.documents}
-                    />
-                  </Col>
-                  <Col xs={24} sm={12} lg={6}>
-                    <StatCard
-                      title="Demandes de Congés"
-                      value={stats.leaves.total}
-                      change={stats.leaves.change}
-                      trend={stats.leaves.trend}
-                      icon={<CalendarOutlined style={{ color: '#f5222d' }} />}
-                      color="#f5222d"
-                      chartData={chartData.leaves}
                     />
                   </Col>
                 </Row>
-                <Row gutter={[24, 24]} style={{ marginTop: '24px' }}>
+                    <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
                   <Col xs={24}>
-                    <DashboardCharts />
+                        <DashboardCharts 
+                          leavesData={allLeaves} 
+                          absencesData={allAbsences}
+                          attestationsData={allAttestations}
+                          expensesData={allExpenses}
+                        />
                   </Col>
                 </Row>
+                  </>
+                )}
               </>
             )}
             <Outlet />

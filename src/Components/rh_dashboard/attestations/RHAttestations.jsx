@@ -20,6 +20,7 @@ import {
   CloseCircleOutlined,
   ClockCircleOutlined,
   FilePdfOutlined,
+  DownloadOutlined,
 } from '@ant-design/icons';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../api/constants';
@@ -35,6 +36,7 @@ const RHAttestations = () => {
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [validationModalVisible, setValidationModalVisible] = useState(false);
   const [selectedAttestation, setSelectedAttestation] = useState(null);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -45,7 +47,33 @@ const RHAttestations = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${API_BASE_URL}/attestations/hr`);
-      setAttestations(response.data);
+      
+      // Check for existing PDFs for each attestation
+      const attestationsWithPdfStatus = await Promise.all(
+        response.data.map(async (attestation) => {
+          try {
+            // Check if PDF exists for this attestation
+            const pdfCheckResponse = await axios.get(`${API_BASE_URL}/attestations/${attestation.id}/pdf`, {
+              responseType: 'blob',
+              validateStatus: function (status) {
+                return status < 500; // Resolve only if the status code is less than 500
+              }
+            });
+            
+            return {
+              ...attestation,
+              has_pdf: pdfCheckResponse.status === 200
+            };
+          } catch (error) {
+            return {
+              ...attestation,
+              has_pdf: false
+            };
+          }
+        })
+      );
+      
+      setAttestations(attestationsWithPdfStatus);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching attestations:', error);
@@ -92,18 +120,47 @@ const RHAttestations = () => {
 
   const generateAttestation = async (attestationId) => {
     try {
+      setGeneratingPdf(true);
       message.loading('Génération de l\'attestation en cours...', 1.5);
       
-      // This would be implemented to call an API endpoint that generates the attestation
-      // await axios.post(`${API_BASE_URL}/attestations/${attestationId}/generate`);
+      // Call the API to generate the PDF
+      const response = await axios.post(`${API_BASE_URL}/attestations/${attestationId}/generate-pdf`);
       
-      // For now, just show a success message
-      setTimeout(() => {
-        message.success('Attestation générée avec succès');
-      }, 1500);
+      message.success('Attestation générée avec succès');
+      
+      // Update the attestation list to reflect the generated PDF
+      fetchAttestations();
     } catch (error) {
       console.error('Error generating attestation:', error);
-      message.error('Erreur lors de la génération de l\'attestation');
+      message.error('Erreur lors de la génération de l\'attestation: ' + 
+        (error.response?.data?.message || error.message));
+    } finally {
+      setGeneratingPdf(false);
+    }
+  };
+
+  const downloadAttestation = async (attestationId) => {
+    try {
+      message.loading('Téléchargement de l\'attestation...', 1);
+      
+      // Download the PDF
+      const response = await axios.get(`${API_BASE_URL}/attestations/${attestationId}/pdf`, {
+        responseType: 'blob'
+      });
+      
+      // Create a blob URL and trigger download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `attestation_${attestationId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      message.success('Téléchargement réussi');
+    } catch (error) {
+      console.error('Error downloading attestation:', error);
+      message.error('Erreur lors du téléchargement de l\'attestation');
     }
   };
 
@@ -166,7 +223,7 @@ const RHAttestations = () => {
           >
             Détails
           </Button>
-          {!record.rh_validation && (
+          {!record.hr_validation && (
             <Button
               type="primary"
               onClick={() => showValidationModal(record)}
@@ -214,12 +271,27 @@ const RHAttestations = () => {
           >
             Détails
           </Button>
-          {record.rh_validation && !record.is_generated && (
+          {record.hr_validation && 
+           record.hr_validation.is_approved && 
+           !record.has_pdf && (
             <Button
               type="primary"
-              onClick={() => generateAttestation(record)}
+              icon={<FilePdfOutlined />}
+              onClick={() => generateAttestation(record.id)}
+              loading={generatingPdf}
             >
-              Générer
+              Générer PDF
+            </Button>
+          )}
+          {record.hr_validation && 
+           record.hr_validation.is_approved && 
+           record.has_pdf && (
+            <Button
+              type="primary"
+              icon={<DownloadOutlined />}
+              onClick={() => downloadAttestation(record.id)}
+            >
+              Télécharger PDF
             </Button>
           )}
         </div>
@@ -375,14 +447,25 @@ const RHAttestations = () => {
                 
                 {selectedAttestation.hr_validation && 
                  selectedAttestation.hr_validation.is_approved && (
-                  <div className="validation-actions" style={{ textAlign: 'center', justifyContent: 'center' }}>
-                    <Button 
-                      type="primary" 
-                      icon={<FilePdfOutlined />}
-                      onClick={() => generateAttestation(selectedAttestation.id)}
-                    >
-                      Générer l'attestation
-                    </Button>
+                  <div className="validation-actions" style={{ textAlign: 'center', justifyContent: 'center', display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                    {!selectedAttestation.has_pdf ? (
+                      <Button 
+                        type="primary" 
+                        icon={<FilePdfOutlined />}
+                        onClick={() => generateAttestation(selectedAttestation.id)}
+                        loading={generatingPdf}
+                      >
+                        Générer l'attestation
+                      </Button>
+                    ) : (
+                      <Button 
+                        type="primary" 
+                        icon={<DownloadOutlined />}
+                        onClick={() => downloadAttestation(selectedAttestation.id)}
+                      >
+                        Télécharger l'attestation
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>

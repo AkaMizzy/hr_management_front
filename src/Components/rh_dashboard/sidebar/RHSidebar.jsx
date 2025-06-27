@@ -63,6 +63,13 @@ const RHSidebar = ({ collapsed, onCollapse }) => {
       style={{
         background: '#fff',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        position: 'fixed',
+        height: '100vh',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: 1000,
+        overflow: 'auto'
       }}
     >
       <div 

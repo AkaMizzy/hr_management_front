@@ -61,7 +61,10 @@ const EmployeeDashboard = () => {
   return (
     <Layout style={{ minHeight: '100vh' }} className="employee-dashboard">
       <EmployeeSidebar collapsed={collapsed} onCollapse={setCollapsed} />
-      <Layout>
+      <Layout style={{ 
+        marginLeft: collapsed ? '80px' : '200px',
+        transition: 'margin-left 0.2s'
+      }}>
         <Header style={{ 
           padding: '0 24px', 
           background: '#fff', 
