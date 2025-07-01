@@ -185,12 +185,50 @@ const TaskList = () => {
       if (selectedTask) {
         await axios.put(`http://localhost:5000/api/taches/${selectedTask.id}`, formData);
         toast.success("Tâche mise à jour avec succès");
+        setIsModalOpen(false);
+        fetchTasks();
       } else {
-        await axios.post("http://localhost:5000/api/taches", formData);
-        toast.success("Tâche créée avec succès");
+        try {
+          // For new task, get the response with the new task data including the ID
+          const response = await axios.post("http://localhost:5000/api/taches", formData);
+          toast.success("Tâche créée avec succès");
+          
+          // Get the newly created task ID from the response
+          const newTaskId = response.data.taskId;
+          if (!newTaskId) {
+            console.error("Task ID not found in response:", response.data);
+            toast.error("Erreur lors de la récupération des détails de la tâche");
+            setIsModalOpen(false);
+            fetchTasks();
+            return;
+          }
+          
+          try {
+            // Fetch the complete task data to ensure we have all fields
+            const taskResponse = await axios.get(`http://localhost:5000/api/taches/${newTaskId}`);
+            const newTask = taskResponse.data;
+            
+            // Close the creation modal
+            setIsModalOpen(false);
+            // Update tasks first
+            await fetchTasks();
+            
+            // Set the newly created task as selected and open the assign modal
+            setSelectedTask(newTask);
+            setIsAssignModalVisible(true);
+            fetchEmployees();
+          } catch (fetchError) {
+            console.error("Error fetching new task details:", fetchError);
+            toast.error("Tâche créée, mais impossible de charger l'écran d'assignation");
+            setIsModalOpen(false);
+            fetchTasks();
+          }
+        } catch (createError) {
+          console.error("Error creating task:", createError);
+          toast.error(createError.response?.data?.message || "Erreur lors de la création de la tâche");
+          // Don't close the modal so the user can try again
+        }
       }
-      setIsModalOpen(false);
-      fetchTasks();
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error(error.response?.data?.message || "Erreur lors de l'enregistrement");

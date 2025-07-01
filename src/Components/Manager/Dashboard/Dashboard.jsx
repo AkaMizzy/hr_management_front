@@ -18,7 +18,6 @@ import DashboardCharts from "./DashboardCharts";
 import userImage from "../../Assets/images/user.png";
 import "./Dashboard.css";
 import axios from 'axios';
-import moment from 'moment';
 
 const { Content, Header, Footer } = Layout;
 const { Title: AntTitle, Text } = Typography;
@@ -584,7 +583,6 @@ const Dashboard = () => {
           <div className="main-content">
             {location.pathname === '/dashboard' && (
               <>
-                <AntTitle level={2}>Tableau de Bord</AntTitle>
                 
                 {error && (
                   <Alert

@@ -333,7 +333,7 @@ const UserManagement = () => {
           >
             <Select>
               <Option value="employe">Employé</Option>
-              <Option value="manager">Responsable</Option>
+              <Option value="manager">Manager</Option>
               <Option value="responsable_rh">Responsable RH</Option>
             </Select>
           </Form.Item>

@@ -30,7 +30,13 @@ const COLORS = [
   '#13c2c2', '#eb2f96', '#faad14', '#a0d911', '#fadb14'
 ];
 
-const DashboardCharts = ({ leavesData = [], absencesData = [], attestationsData = [], expensesData = [] }) => {
+const DashboardCharts = ({ 
+  leavesData = [], 
+  absencesData = [], 
+  attestationsData = [], 
+  expensesData = [],
+  employeesByDepartmentVisible = true
+}) => {
   const [timeRange, setTimeRange] = useState('3');
   const [loading, setLoading] = useState(false);
   const [monthlyData, setMonthlyData] = useState([]);
@@ -314,12 +320,13 @@ const DashboardCharts = ({ leavesData = [], absencesData = [], attestationsData 
         </Col>
         <Col xs={24} md={12}>
           {/* Employees by Department */}
-          <Card title="Nombre d'employés par département" style={{ marginBottom: 24, height: '100%' }}>
-            {loadingDepartments ? (
-              <div style={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Spin size="large" />
-              </div>
-            ) : employeesByDepartment.length > 0 ? (
+          {employeesByDepartmentVisible && (
+            <Card title="Nombre d'employés par département" style={{ marginBottom: 24, height: '100%' }}>
+              {loadingDepartments ? (
+                <div style={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Spin size="large" />
+                </div>
+              ) : employeesByDepartment.length > 0 ? (
         <ResponsiveContainer width="100%" height={300}>
                 <BarChart
                   data={employeesByDepartment.slice(0, 10)} // Limit to top 10 departments for readability
@@ -381,8 +388,9 @@ const DashboardCharts = ({ leavesData = [], absencesData = [], attestationsData 
                   </Bar>
           </BarChart>
         </ResponsiveContainer>
-            ) : renderNoData()}
-      </Card>
+              ) : renderNoData()}
+            </Card>
+          )}
         </Col>
       </Row>
     </div>
