@@ -1,0 +1,131 @@
+/* Drag and drop styles */
+.drag-visible {
+  cursor: move;
+}
+
+.drop-over-downward {
+  border-bottom: 2px dashed #1890ff;
+}
+
+.drop-over-upward {
+  border-top: 2px dashed #1890ff;
+}
+
+/* Table row hover effect */
+.ant-table-tbody > tr.ant-table-row:hover {
+  background-color: #f0f7ff;
+}
+
+/* Order column buttons */
+.order-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+/* Saving indicator */
+.saving-indicator {
+  display: flex;
+  align-items: center;
+  color: #1890ff;
+  font-size: 14px;
+  margin-right: 12px;
+}
+
+/* Grab handle */
+.drag-handle {
+  cursor: grab;
+  color: #999;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Layout fixes */
+.rubriques-management {
+  width: 100%;
+  overflow-x: hidden;
+  padding-right: 8px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Delete Confirmation Styles */
+.delete-confirmation {
+  text-align: center;
+}
+
+.delete-confirmation p {
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: #333;
+}
+
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.delete-confirm-btn,
+.delete-cancel-btn {
+  padding: 8px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.delete-confirm-btn {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #ff7875;
+}
+
+.delete-cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.delete-cancel-btn:hover {
+  background-color: #d9d9d9;
+}
+
+/* Modal styles */
+.ant-modal {
+  top: 20px;
+}
+
+.ant-modal-body {
+  padding: 16px;
+  max-height: 80vh;
+}
+
+.ant-modal-footer {
+  padding: 10px 16px;
+}
+
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-form-item-label > label {
+  height: auto;
+} 

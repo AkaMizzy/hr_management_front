@@ -389,7 +389,7 @@ const DashboardCharts = ({
           </BarChart>
         </ResponsiveContainer>
               ) : renderNoData()}
-            </Card>
+      </Card>
           )}
         </Col>
       </Row>

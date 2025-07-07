@@ -34,6 +34,7 @@ import RHAttestations from './Components/rh_dashboard/attestations/RHAttestation
 import RHAbsences from './Components/rh_dashboard/absences/RHAbsences';
 import RHConges from './Components/rh_dashboard/conges/RHConges';
 import RHNoteFrais from './Components/rh_dashboard/note_frais/RHNoteFrais';
+import PayrollManagement from './Components/rh_dashboard/paie/RHPaie';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -124,6 +125,7 @@ function App() {
           <Route path="absences" element={<RHAbsences />} />
           <Route path="conges" element={<RHConges />} />
           <Route path="note-frais" element={<RHNoteFrais />} />
+          <Route path="paie" element={<PayrollManagement />} />
           <Route index element={<Navigate to="home" replace />} />
         </Route>
 

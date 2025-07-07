@@ -69,7 +69,6 @@ The system implements role-based access control with three main roles:
 3. If approved by manager, HR reviews and approves/rejects
 4. If approved by HR, the attestation can be generated
 
-## Leave Request Workflow
 1. Employee submits a leave request with start and end dates
 2. Manager reviews and approves/rejects the request
    - If rejected, the workflow ends

@@ -6,7 +6,8 @@ import {
   FormOutlined,
   ClockCircleOutlined,
   CarryOutOutlined,
-  DollarOutlined
+  DollarOutlined,
+  BankOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import logo from '../../Assets/images/pic1.jpeg';
@@ -48,6 +49,11 @@ const RHSidebar = ({ collapsed, onCollapse }) => {
       key: '/rh-dashboard/note-frais',
       icon: <DollarOutlined />,
       label: 'Notes de frais'
+    },
+    {
+      key: '/rh-dashboard/paie',
+      icon: <BankOutlined />,
+      label: 'Gestion de Paie'
     },
   ];
 

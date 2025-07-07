@@ -10,7 +10,9 @@ import {
   ClockCircleOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
-  MinusOutlined
+  MinusOutlined,
+  DollarOutlined,
+  BankOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import DashboardCharts from '../../Manager/Dashboard/DashboardCharts';
@@ -165,7 +167,7 @@ const RHHome = () => {
       console.error('Error fetching data:', error);
       setError('Erreur lors du chargement des données. Veuillez réessayer.');
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   }, [dataFetched]);
 
@@ -285,7 +287,7 @@ const RHHome = () => {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Title level={3}>Tableau de Bord RH</Title>
+      <Title level={3}>Tableau de Bord RH</Title>
         <button 
           onClick={handleRefresh}
           style={{
@@ -330,7 +332,7 @@ const RHHome = () => {
                 color="#1890ff"
                 change={stats.employees.change}
               />
-            </Col>
+          </Col>
             <Col xs={12} sm={12} md={6} lg={6}>
               <StatCard
                 title="Responsables"
@@ -339,7 +341,7 @@ const RHHome = () => {
                 color="#722ed1"
                 change={stats.managers.change}
               />
-            </Col>
+          </Col>
             <Col xs={12} sm={12} md={6} lg={6}>
               <StatCard
                 title="Comptes Actifs"
@@ -348,7 +350,7 @@ const RHHome = () => {
                 color="#52c41a"
                 change={stats.activeUsers.change}
               />
-            </Col>
+          </Col>
             <Col xs={12} sm={12} md={6} lg={6}>
               <StatCard
                 title="Entités"
@@ -377,17 +379,17 @@ const RHHome = () => {
                     description="Veuillez vous assurer que les routes backend sont disponibles et que les données ont été chargées correctement."
                     type="info"
                     showIcon
-                  />
-                </Card>
+              />
+            </Card>
               )}
-            </Col>
-          </Row>
+          </Col>
+        </Row>
         </>
       )}
       
       <Divider style={{ margin: '32px 0 24px' }} />
       
-      <Title level={4}>Actions Rapides</Title>
+        <Title level={4}>Actions Rapides</Title>
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
           <ActionCard 
@@ -424,8 +426,29 @@ const RHHome = () => {
             color="#fa8c16"
             onClick={() => window.location.href = '/rh-dashboard/absences'}
           />
-        </Col>
+          </Col>
       </Row>
+
+      <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
+        <Col xs={24} sm={12} lg={6}>
+          <ActionCard 
+            title="Notes de frais"
+            description="Gérer les demandes de notes de frais"
+            icon={<DollarOutlined />}
+            color="#eb2f96"
+            onClick={() => window.location.href = '/rh-dashboard/note-frais'}
+          />
+          </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <ActionCard 
+            title="Gestion de la Paie"
+            description="Gérer les rubriques et fiches de paie"
+            icon={<BankOutlined />}
+            color="#13c2c2"
+            onClick={() => window.location.href = '/rh-dashboard/paie'}
+          />
+          </Col>
+        </Row>
     </div>
   );
 };

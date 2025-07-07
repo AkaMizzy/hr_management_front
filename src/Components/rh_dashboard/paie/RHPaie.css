@@ -1,0 +1,33 @@
+.payroll-management {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.payroll-card {
+  width: 100%;
+  overflow: hidden;
+}
+
+.payroll-card .ant-card-body {
+  padding: 16px;
+}
+
+/* Make tabs responsive */
+.ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+  .ant-tabs-tab {
+    padding: 8px 12px;
+  }
+  
+  .payroll-card .ant-card-body {
+    padding: 12px 8px;
+  }
+}
+
+/* Fix for horizontal scrolling */
+.ant-tabs-content-holder {
+  overflow-x: hidden;
+} 
