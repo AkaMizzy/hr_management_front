@@ -1,70 +1,118 @@
-# Getting Started with Create React App
+# HR Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Overview
+The HR Management System is a web application designed to streamline human resources operations within an organization. The system consists of a React-based frontend and a Node.js/Express backend with a MySQL database.
 
-## Available Scripts
+## Key Features
+- Role-based authentication and authorization (Employee, Manager, Responsable RH)
+- Employee dashboard for personal information management
+- Manager dashboard for employee management, document management and many more.
+- HR dashboard for organization-wide HR operations
+- Attestation request and approval workflow
+- entity management
+- task management
 
-In the project directory, you can run:
+## Project Structure
 
-### `npm start`
+### Frontend (`hr_frontend`)
+```
+hr_frontend/
+├── public/               # Static assets
+├── src/
+│   ├── api/              # API connection utilities
+│   ├── Components/
+│   │   ├── Assets/  
+│   │   ├── auth/         # Authentication components
+│   │   ├── employee_dashboard/
+│   │   │   ├──  # Employee components
+│   │   │   └── ...
+│   │   ├── Manager/
+│   │   │   ├──  # Manager components
+│   │   │   └── ...
+│   │   ├── rh_dashboard/
+│   │   │   ├──  # RH  components
+│   │   │   └── ...
+│   │   └── ...
+│   ├── App.js            # Main application component with routes
+│   └── index.js          # Application entry point
+├── package.json          # Frontend dependencies
+└── README.md             # Frontend documentation
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Backend (`hr_backend`)
+```
+hr_backend/
+├── config/               # Database and configuration files
+├── routes/
+│   ├── attestations.js   # Attestation request API endpoints
+│   ├── auth.js           # Authentication endpoints
+│   ├── documents.js      # Document management endpoints
+│   ├── employes.js       # Employee management endpoints
+│   ├── entites.js        # Entity management endpoints
+│   ├── taches.js         # Task management endpoints
+│   └── users.js          # User management endpoints
+├── uploads/              # File upload storage
+├── server.js             # Main server file
+├── package.json          # Backend dependencies
+└── README.md             # Backend documentation
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Authentication and Authorization
+The system implements role-based access control with three main roles:
+- **Employee**: Regular staff members who can view their own information and see their assigned tasks and submit demands
+- **Manager**: Team leaders who can manage employees assigne tasks and approve/reject demands
+- **Responsable RH**: HR personnel with access to organization-wide HR functions
 
-### `npm test`
+## Attestation Request Workflow
+1. Employee submits an attestation request
+2. Manager reviews and approves/rejects the request
+3. If approved by manager, HR reviews and approves/rejects
+4. If approved by HR, the attestation can be generated
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Employee submits a leave request with start and end dates
+2. Manager reviews and approves/rejects the request
+   - If rejected, the workflow ends
+   - If approved, the request is sent to HR with an option to make it annulable or not
+3. HR reviews and provides final approval/rejection
+4. Employee can track the status of their request
+5. If the request is annulable, employee can cancel it before it takes effect
 
-### `npm run build`
+## API Endpoints
+The backend provides RESTful API endpoints for various operations:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Attestation Endpoints
+- `POST /attestations`: Create a new attestation request
+- `GET /attestations/employee/:employeId`: Get attestations for an employee
+- `GET /attestations/manager/:managerId`: Get attestations for manager validation
+- `GET /attestations/hr`: Get attestations for HR validation
+- `POST /attestations/:id/validate/manager`: Manager validation of an attestation
+- `POST /attestations/:id/validate/hr`: HR validation of an attestation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Leave Request (Congé) Endpoints
+- `POST /api/conges`: Create a new leave request
+- `GET /api/conges/employee/:employeId`: Get leave requests for an employee
+- `GET /api/conges/manager/:managerId`: Get leave requests for manager validation
+- `GET /api/conges/hr`: Get leave requests for HR validation
+- `GET /api/conges/:id`: Get a specific leave request
+- `POST /api/conges/:id/validate/manager`: Manager validation of a leave request
+- `POST /api/conges/:id/validate/hr`: HR validation of a leave request
+- `POST /api/conges/:id/cancel`: Cancel a leave request (if annulable)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Authentication Endpoints
+- `POST /auth/login`: User login
+- `POST /auth/logout`: User logout
 
-### `npm run eject`
+## Database Structure
+The system uses a relational database with tables for:
+- Users
+- Employees
+- Attestations
+- Attestation validations
+- Tasks
+- Documents
+- Entities
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Technologies Used
+- **Frontend**: React, Ant Design, Axios
+- **Backend**: Node.js, Express
+- **Database**: MySQL 
